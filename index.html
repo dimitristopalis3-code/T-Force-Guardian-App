@@ -3,54 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>T-FORCE SENTINEL CMD</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
+    <!-- BRANDING: App Icons -->
+    <link rel="icon" type="image/png" href="./Tforcelogo1(1).png">
+    <link rel="apple-touch-icon" href="./Tforcelogo1(1).png">
+    
+    <!-- SECURITY: CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.tailwindcss.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com https://en.wikipedia.org https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; img-src 'self' data: https: blob:;">
+    
+    <title>T-FORCE SENTINEL</title>
+
+    <!-- Font: Rajdhani -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    
-    <meta name="theme-color" content="#000000"/>
 
-    <!-- SECURITY: CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.tailwindcss.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com https://en.wikipedia.org https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; img-src 'self' data: https: blob:;">
-
-    <!-- CRITICAL FIX: Use Legacy React/ReactDOM Dev for Stability -->
-    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <!-- Dependencies -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
     <style>
-        :root { --bg-color: #000000; --card-bg: #111111; --primary-red: #dc2626; --text-color: #ffffff; --text-muted: #9ca3af; --border-color: #333333; --success-color: #22c55e; }
-        body { margin: 0; padding: 0; height: 100%; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-color); font-family: 'Rajdhani', sans-serif; display: flex; justify-content: center; }
-        #root { width: 100%; max-width: 480px; background-color: #000; min-height: 100vh; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .hidden { display: none !important; }
-        .app-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
-        header { position: sticky; top: 0; background: rgba(0,0,0,0.95); border-bottom: 2px solid var(--primary-red); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; }
-        .input-label { color: var(--primary-red); font-weight: bold; font-size: 12px; margin-bottom: 5px; display: block; }
-        .input-field { width: 100%; padding: 14px; background: #000; border: 1px solid var(--border-color); color: white; border-radius: 2px; box-sizing: border-box; margin-bottom: 12px; }
-        .btn-primary { background: var(--primary-red); color: white; padding: 14px 20px; border: none; border-radius: 2px; cursor: pointer; font-weight: 700; text-transform: uppercase; width: 100%; }
-        .btn-secondary { background: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 14px 20px; border-radius: 2px; cursor: pointer; font-weight: 700; text-transform: uppercase; width: 100%; }
-        .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #000; border-top: 2px solid #333; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; }
-        .nav-item { background: none; border: none; color: var(--text-muted); padding: 5px; cursor: pointer; }
-        .nav-item.active { color: var(--primary-red); }
+        :root { --bg-color: #000000; --card-bg: #111111; --text-main: #ffffff; --text-muted: #9ca3af; --brand-red: #dc2626; --border-color: #27272a; }
+        body { margin: 0; padding: 0; background-color: #111; color: var(--text-main); user-select: none; -webkit-tap-highlight-color: transparent; font-family: 'Rajdhani', sans-serif; display: flex; justify-content: center; }
+        * { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-red); }
+        .ai-content strong { color: var(--brand-red); }
+        .ai-content ul { padding-left: 20px; color: var(--text-muted); }
+        #crash-screen { display: none; padding: 20px; color: red; font-family: monospace; white-space: pre-wrap; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-
-    <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            const root = document.getElementById('root');
-            root.innerHTML = `<div style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:red; padding:20px; font-family:monospace; white-space:pre-wrap;">⚠️ SYSTEM CRASH ⚠️\n\n${message}\n\nLine: ${lineno}</div>`;
-        };
-    </script>
+    <div id="root" style="width: 100%; max-width: 480px; background-color: #000; min-height: 100vh; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5);"></div>
+    <div id="crash-screen"></div>
 
     <!-- FIREBASE BRIDGE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBwhzGsK-ah7ObMOgpRDlzGghycLNinm6g",
@@ -58,184 +55,462 @@
             projectId: "tforce-guardian-system",
             storageBucket: "tforce-guardian-system.firebasestorage.app",
             messagingSenderId: "194168927826",
-            appId: "1:194168927826:web:18073e1a188b8e4408118b"
+            appId: "1:194168927826:web:18073e1a188b8e4408118b",
+            measurementId: "G-QEX7FFSNKG"
         };
 
-        try {
-            const app = initializeApp(firebaseConfig);
-            window.fbAuth = getAuth(app);
-            window.fbDb = getFirestore(app);
-            window.fbFuncs = { onAuthStateChanged, signInWithEmailAndPassword, signOut, collection, onSnapshot, doc, setDoc, serverTimestamp, getDoc, createUserWithEmailAndPassword };
-            window.dispatchEvent(new Event('firebase-ready'));
-        } catch (e) {
-            console.error("Firebase Init Error:", e);
-        }
+        const app = initializeApp(firebaseConfig);
+        window.fbAuth = getAuth(app);
+        window.fbDb = getFirestore(app);
+        window.fbFunctions = { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, deleteDoc, onSnapshot };
+        window.dispatchEvent(new Event('firebase-ready'));
     </script>
 
-    <!-- APP LOGIC (V7.8) -->
-    <script type="text/babel">
-        (function() {
-            const { useState, useEffect, useRef } = React;
+    <script>
+        window.onerror = function(message, source, lineno, colno, error) {
+            document.getElementById('root').style.display = 'none';
+            const crash = document.getElementById('crash-screen');
+            crash.style.display = 'block';
+            crash.innerHTML = "⚠️ SYSTEM CRASH ⚠️\n\n" + message + "\n\nLine: " + lineno;
+        };
+    </script>
 
-            // --- CORE UTILITIES ---
-            const useStickyState = (defaultValue, key) => {
-                const [value, setValue] = useState(() => { try { const stickyValue = window.localStorage.getItem(key); return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue; } catch (e) { return defaultValue; } });
-                useEffect(() => { window.localStorage.setItem(key, JSON.stringify(value)); }, [key, value]);
-                return [value, setValue];
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- STYLES ---
+        const styles = {
+          app: { fontFamily: "'Rajdhani', sans-serif", backgroundColor: '#000000', color: '#ffffff', minHeight: '100vh', paddingBottom: '90px', width: '100%', overflowX: 'hidden' },
+          header: { position: 'sticky', top: 0, backgroundColor: 'rgba(0, 0, 0, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '2px solid #dc2626', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1000 },
+          card: { backgroundColor: '#111111', border: '1px solid #333333', borderRadius: '4px', padding: '16px', marginBottom: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)' },
+          btnBase: { width: '100%', padding: '16px', border: 'none', borderRadius: '2px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '18px', marginBottom: '10px', transition: 'all 0.1s' },
+          btnPrimary: { backgroundColor: '#dc2626', color: 'white', boxShadow: '0 0 10px rgba(220, 38, 38, 0.3)' },
+          btnSecondary: { backgroundColor: '#1f1f1f', color: '#e5e7eb', border: '1px solid #333' },
+          input: { width: '100%', padding: '14px', backgroundColor: '#000000', border: '1px solid #333', color: 'white', borderRadius: '2px', marginBottom: '12px', fontSize: '16px', fontFamily: "'Rajdhani', sans-serif" },
+          textarea: { width: '100%', padding: '14px', backgroundColor: '#000000', border: '1px solid #333', color: 'white', borderRadius: '2px', marginBottom: '12px', fontSize: '16px', fontFamily: "'Rajdhani', sans-serif", minHeight: '100px' },
+          nav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', backgroundColor: '#000000', borderTop: '2px solid #333', display: 'flex', justifyContent: 'space-around', padding: '12px 10px', zIndex: 1000, paddingBottom: '20px' },
+          navItem: { background: 'none', border: 'none', color: '#6b7280', fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: "'Rajdhani', sans-serif", fontWeight: '600' },
+          logoText: { fontWeight: 'bold', fontSize: '22px', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '8px' }
+        };
+
+        const useStickyState = (defaultValue, key) => {
+          const [value, setValue] = useState(() => { try { const stickyValue = window.localStorage.getItem(key); return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue; } catch (e) { return defaultValue; } });
+          useEffect(() => { window.localStorage.setItem(key, JSON.stringify(value)); }, [key, value]);
+          return [value, setValue];
+        };
+
+        // --- HEADER ---
+        const Header = ({ setView }) => (
+          <div style={styles.header}>
+            <div onClick={() => setView('dashboard')} style={styles.logoText}>
+              <img src="./Tforcelogo1(1).png" alt="T-FORCE" style={{height: '35px', objectFit: 'contain'}} onError={(e) => {e.target.style.display='none'; document.getElementById('fallback-logo').style.display='block'}} />
+              <div id="fallback-logo" style={{display: 'none'}}><span style={{color:'white'}}>T-FORCE</span><span style={{color:'#dc2626'}}>SEC</span></div>
+            </div>
+            <div onClick={() => setView('settings')} style={{ fontSize: '24px', color: '#dc2626' }}>⚙️</div>
+          </div>
+        );
+
+        // --- AUTH ---
+        const AuthScreen = () => {
+            const [isLogin, setIsLogin] = useState(true);
+            const [email, setEmail] = useState("");
+            const [password, setPassword] = useState("");
+            const [username, setUsername] = useState("");
+            const [error, setError] = useState("");
+            const [loading, setLoading] = useState(false);
+
+            const handleAuth = async () => {
+                setLoading(true); setError("");
+                const { signInWithEmailAndPassword, createUserWithEmailAndPassword, setDoc, doc, serverTimestamp } = window.fbFunctions;
+                try {
+                    if (isLogin) { await signInWithEmailAndPassword(window.fbAuth, email, password); } 
+                    else {
+                        const cred = await createUserWithEmailAndPassword(window.fbAuth, email, password);
+                        await setDoc(doc(window.fbDb, 'users', cred.user.uid), { username: username, email: email, createdAt: serverTimestamp(), emergencyContact: "" });
+                    }
+                } catch (err) { setError(err.message); } finally { setLoading(false); }
             };
-            
-            // --- LANGUAGE CORE ---
-            const translations = {
-                EN: {
-                    LOGIN: "LOGIN", AUTHENTICATE: "AUTHENTICATE", SIGN_OUT: "SIGN OUT", ON_DUTY: "ON DUTY", OFF_DUTY: "OFF DUTY", CMD_CENTER: "SENTINEL", INTEL: "INTEL", GEAR: "GEAR", REPORT: "REPORT", RED_TEAM: "RED TEAM", EVAC: "EVAC", CRISIS: "CRISIS", MEDICAL: "MEDICAL", ATTACK: "ATTACK", ARREST: "ARREST",
-                    AREA: "OPERATION AREA", SITREP: "SITREP", HEATMAP: "HEATMAP", TARGET: "TARGET VETTING", DEEP_SCAN: "DEEP SCAN", LOG_ENTRY: "LOG ENTRY", COMPILE: "COMPILE SHIFT", MANUAL: "MANUAL", AI_WRITER: "AI WRITER", ROUGH_NOTES: "ROUGH NOTES", COORDS: "COORDINATES", NO_ACTIVE_UNITS: "NO ACTIVE UNITS", TIME: "TIME", LOCATION: "LOCATION", DETAILS: "DETAILS", SAVE: "SAVE", API_KEY: "API KEY", STOP: "STOP", GO_LIVE: "GO LIVE",
-                    AI_SUFFIX: " in English", RED_TEAM_PROMPT: "Role: Expert Security Red Team. Target Scenario: [SCENARIO]. Identify 3 critical vulnerabilities and 3 specific tactical countermeasures. Format: Bullet points.", REPORT_PROMPT: "Role: Professional Bodyguard. Task: Convert these rough notes into a formal Security Incident Log / Daily Report. Use military time and professional language. Notes: [NOTES], in English.", SCENARIO: "SCENARIO", ANALYZE: "ANALYZE", SETTINGS: "SETTINGS"
-                },
-                GR: {
-                    LOGIN: "ΣΥΝΔΕΣΗ", AUTHENTICATE: "ΤΑΥΤΟΠΟΙΗΣΗ", SIGN_OUT: "ΑΠΟΣΥΝΔΕΣΗ", ON_DUTY: "ΣΕ ΥΠΗΡΕΣΙΑ", OFF_DUTY: "ΕΚΤΟΣ ΥΠΗΡΕΣΙΑΣ", CMD_CENTER: "SENTINEL", INTEL: "ΠΛΗΡΟΦΟΡΙΕΣ", GEAR: "ΕΞΟΠΛΙΣΜΟΣ", REPORT: "ΑΝΑΦΟΡΑ", RED_TEAM: "RED TEAM", EVAC: "ΕΚΚΕΝΩΣΗ", CRISIS: "ΚΡΙΣΗ", MEDICAL: "ΙΑΤΡΙΚΟ", ATTACK: "ΕΠΙΘΕΣΗ", ARREST: "ΣΥΛΛΗΨΗ",
-                    AREA: "ΠΕΡΙΟΧΗ", SITREP: "ΚΑΤΑΣΤΑΣΗ", HEATMAP: "ΧΑΡΤΗΣ ΕΓΚΛΗΜΑΤΩΝ", TARGET: "ΕΛΕΓΧΟΣ ΣΤΟΧΟΥ", DEEP_SCAN: "ΒΑΘΙΑ ΣΑΡΩΣΗ", LOG_ENTRY: "ΕΙΣΟΔΟΣ ΑΡΧΕΙΟΥ", COMPILE: "ΣΥΝΤΑΞΗ ΒΑΡΔΙΑΣ", MANUAL: "ΧΕΙΡΟΚΙΝΗΤΟ", AI_WRITER: "AI ΣΥΝΤΑΚΤΗΣ", ROUGH_NOTES: "ΠΡΟΧΕΙΡΕΣ ΣΗΜΕΙΩΣΕΙΣ", COORDS: "ΣΥΝΤΕΤΑΓΜΕΝΕΣ", NO_ACTIVE_UNITS: "ΔΕΝ ΒΡΕΘΗΚΑΝ ΕΝΕΡΓΕΣ ΜΟΝΑΔΕΣ", TIME: "ΩΡΑ", LOCATION: "ΤΟΠΟΘΕΣΙΑ", DETAILS: "ΛΕΠΤΟΜΕΡΕΙΕΣ", SAVE: "ΑΠΟΘΗΚΕΥΣΗ", API_KEY: "ΚΛΕΙΔΙ API", STOP: "ΠΑΥΣΗ", GO_LIVE: "ΕΝΑΡΞΗ", SCENARIO: "ΣΕΝΑΡΙΟ", ANALYZE: "ΑΝΑΛΥΣΗ", SETTINGS: "ΡΥΘΜΙΣΕΙΣ"
+
+            return (
+                <div style={{...styles.app, display:'flex', flexDirection:'column', justifyContent:'center', padding:'20px'}}>
+                    <div style={{textAlign:'center', marginBottom:'40px'}}>
+                        <img src="./Tforcelogo1(1).png" style={{height:'80px', marginBottom:'20px'}} onError={(e) => e.target.style.display='none'} />
+                        <h1 style={{color:'#dc2626', fontSize:'32px', margin:0}}>T-FORCE</h1>
+                        <h2 style={{color:'white', fontSize:'24px', margin:0}}>GUARDIAN SYSTEM</h2>
+                    </div>
+                    <div style={styles.card}>
+                        <h3 style={{color:'white', marginTop:0}}>{isLogin ? "LOGIN" : "NEW PROFILE"}</h3>
+                        {!isLogin && <input style={styles.input} placeholder="Full Name" value={username} onChange={e=>setUsername(e.target.value)} />}
+                        <input style={styles.input} type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
+                        <input style={styles.input} type="password" placeholder="Password" value={password} onChange={e=>setPassword(e.target.value)} />
+                        {error && <p style={{color:'red', fontSize:'12px'}}>{error}</p>}
+                        <button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={handleAuth} disabled={loading}>{loading ? "PROCESSING..." : (isLogin ? "ENTER" : "CREATE")}</button>
+                        <p style={{textAlign:'center', color:'#999', fontSize:'12px', marginTop:'10px'}} onClick={() => setIsLogin(!isLogin)}>{isLogin ? "New Guardian? Create Account" : "Have an account? Login"}</p>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- SHARED MODAL ---
+        const SummaryModal = ({ title, content, links, loading, onClose }) => (
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '20px', paddingTop: '60px', alignItems: 'center' }}>
+                <div style={{...styles.card, flex: 1, width: '100%', maxWidth: '480px', overflowY: 'auto', border: '1px solid #dc2626'}}>
+                    <h2 style={{color: '#dc2626', marginTop: 0, borderBottom: '1px solid #333', paddingBottom: '10px'}}>{loading ? "PROCESSING..." : title}</h2>
+                    {loading ? <div style={{textAlign: 'center', marginTop: '50px', color: '#dc2626'}}>⟳ ANALYZING DATA...</div> : (
+                        <div className="ai-content" style={{lineHeight: '1.6', fontSize: '16px', whiteSpace: 'pre-wrap'}}>
+                            {content}
+                            {links && links.length > 0 && (
+                                <div style={{marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #333'}}>
+                                    <h4 style={{color: '#dc2626', margin: '0 0 10px 0'}}>EXTERNAL LINKS</h4>
+                                    {links.map((link, i) => <button key={i} style={{...styles.btnBase, backgroundColor: '#333', fontSize: '14px', height: 'auto', padding: '12px'}} onClick={() => window.open(link.url, '_blank')}>🔗 {link.label}</button>)}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+                <button style={{...styles.btnBase, ...styles.btnSecondary, maxWidth: '480px'}} onClick={onClose}>CLOSE</button>
+            </div>
+        );
+
+        // --- QR SCANNER ---
+        const QRScanner = () => {
+            useEffect(() => {
+                const scanner = new Html5Qrcode("reader");
+                scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, 
+                    (decodedText) => {
+                        alert("CHECKPOINT LOGGED: " + decodedText);
+                        scanner.stop();
+                    }, (err) => {}
+                );
+                return () => { try { scanner.stop(); } catch(e){} };
+            }, []);
+            return (<div style={{padding:'16px'}}><h2 style={{color:'white'}}>CHECKPOINT SCANNER</h2><div id="reader" style={{width:'100%', borderRadius:'8px', overflow:'hidden'}}></div></div>);
+        };
+
+        // --- INTEL HUB (Hybrid V6.4) ---
+        const IntelHub = () => {
+            const [target, setTarget] = useState("");
+            const [location, setLocation] = useState("Mykonos");
+            const [summary, setSummary] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [contacts] = useStickyState({ geminiKey: "" }, 'sentinel_contacts');
+
+            const performApiCall = async (model, prompt) => {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${contacts.geminiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Role: T-Force Security Analyst. Output: Tactical Summary. No fluff. QUERY: ${prompt}` }] }] })
+                });
+                if (!response.ok) throw new Error(response.statusText);
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text;
+            };
+
+            const fetchMiniAI = async (loc) => {
+                try {
+                    const res = await fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&origin=*&titles=${encodeURIComponent(loc)}`);
+                    const data = await res.json();
+                    const pageId = Object.keys(data.query.pages)[0];
+                    return pageId === "-1" ? "No records found." : data.query.pages[pageId].extract.substring(0, 500) + "...";
+                } catch (e) { return "Database error."; }
+            };
+
+            const executeHybridSearch = async (prompt, title, type, cleanTarget, cleanLoc) => {
+                setLoading(true);
+                setSummary({ title, content: "", links: [] });
+                let aiText = "", useFallback = false;
+
+                if (contacts.geminiKey) {
+                    try { aiText = await performApiCall("gemini-1.5-flash", prompt); }
+                    catch (e) { try { aiText = await performApiCall("gemini-1.5-pro", prompt); } catch (e2) { useFallback = true; } }
+                } else { useFallback = true; }
+
+                if (useFallback) {
+                    const wiki = await fetchMiniAI(cleanLoc);
+                    aiText = `⚠️ AI OFFLINE. MANUAL MODE ACTIVE.\n\nDATA (${cleanLoc.toUpperCase()}):\n${wiki}`;
+                }
+
+                const smartLinks = type === 'hotel' ? [
+                    { label: "Deep Search: 'Theft/Scams'", url: `https://www.google.com/search?q=${encodeURIComponent(`site:tripadvisor.com "${cleanTarget}" theft unsafe scam`)}` },
+                    { label: "Booking Reviews", url: `https://www.google.com/search?q=${encodeURIComponent(`site:booking.com "${cleanTarget}" negative review`)}` }
+                ] : [
+                    { label: "Live: Twitter/X", url: `https://www.google.com/search?q=${encodeURIComponent(`site:twitter.com "${cleanLoc}" riot protest crime`)}` },
+                    { label: "Local News", url: `https://www.google.com/search?q=${encodeURIComponent(`${cleanLoc} news crime protest`)}` }
+                ];
+                setSummary({ title: useFallback ? title + " (MANUAL)" : title, content: aiText, links: smartLinks });
+                setLoading(false);
+            };
+
+            return (
+                <div style={{padding:'16px'}}>
+                    <h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>INTEL HUB (OSINT)</h2>
+                    {summary && <SummaryModal title={summary.title} content={summary.content} links={summary.links} loading={loading} onClose={() => setSummary(null)} />}
+                    <div style={styles.card}>
+                        <label style={{fontSize:'12px', color:'#dc2626'}}>AREA</label>
+                        <input style={styles.input} value={location} onChange={e => setLocation(e.target.value)} />
+                        <div style={{display:'flex', gap:'8px'}}>
+                            <button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={() => executeHybridSearch(`Civil Unrest SITREP for "${location}"`, `SITREP: ${location}`, 'riots', '', location)}>🌍 SITREP</button>
+                            <button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={() => executeHybridSearch(`Crime Heatmap for "${location}"`, `THREAT MAP: ${location}`, 'crime', '', location)}>📊 HEATMAP</button>
+                        </div>
+                    </div>
+                    <div style={styles.card}>
+                        <label style={{fontSize:'12px', color:'#dc2626'}}>TARGET VETTING</label>
+                        <input style={styles.input} value={target} onChange={e => setTarget(e.target.value)} placeholder="e.g. Cavo Tagoo" />
+                        <button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={() => { if(!target) return alert("TARGET REQUIRED"); executeHybridSearch(`Security Audit for "${target}" in "${location}"`, `TARGET: ${target}`, 'hotel', target, location); }}>🕵️ DEEP SCAN</button>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- RED TEAM (Hybrid V6.4) ---
+        const RedTeam = () => {
+            const [scenario, setScenario] = useState("");
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [contacts] = useStickyState({ geminiKey: "" }, 'sentinel_contacts');
+
+            const threatLibrary = {
+                vehicle: { trigger: ['car', 'drive', 'vehicle', 'route'], text: "THREATS:\n• Ambush at Choke Points\n• Box-in maneuver\n\nCOUNTERMEASURES:\n• Vary routes\n• Maintain distance" },
+                hotel: { trigger: ['hotel', 'room', 'lobby', 'villa'], text: "THREATS:\n• Unauthorized access\n• Hidden surveillance\n\nCOUNTERMEASURES:\n• Room sweep\n• Pre-planned evac route" },
+                crowd: { trigger: ['crowd', 'club', 'street'], text: "THREATS:\n• Lone Wolf Attacker\n• Separation\n\nCOUNTERMEASURES:\n• Tight Diamond Formation\n• Scan hands/waistbands" },
+                default: { trigger: [], text: "STANDARD OPS:\n• Surveillance detection\n• Medical Emergency\n\nACTIONS:\n• 360 awareness\n• Verify comms" }
+            };
+
+            const getManualAnalysis = (text) => {
+                const lower = text.toLowerCase();
+                let analysis = "⚠️ MANUAL MODE (AI OFFLINE)\n\n";
+                let matched = false;
+                Object.keys(threatLibrary).forEach(key => {
+                    if (key === 'default') return;
+                    if (threatLibrary[key].trigger.some(t => lower.includes(t))) { analysis += `--- ${key.toUpperCase()} ---\n${threatLibrary[key].text}\n\n`; matched = true; }
+                });
+                return matched ? analysis : analysis + threatLibrary.default.text;
+            };
+
+            const analyze = async () => {
+                setLoading(true);
+                let aiSuccess = false;
+                if (contacts.geminiKey) {
+                    try {
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${contacts.geminiKey}`, {
+                            method: 'POST', headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ contents: [{ parts: [{ text: `Role: Red Team. Scenario: "${scenario}". List 3 threats & 3 countermeasures.` }] }] })
+                        });
+                        if (!res.ok) throw new Error("API Fail");
+                        const data = await res.json();
+                        setResult(data.candidates?.[0]?.content?.parts?.[0]?.text);
+                        aiSuccess = true;
+                    } catch (e) { console.warn("AI Fail"); }
+                }
+                if (!aiSuccess) setResult(getManualAnalysis(scenario));
+                setLoading(false);
+            };
+
+            return (
+                <div style={{padding:'16px'}}>
+                    <h2 style={{color: 'white', borderLeft: '4px solid #dc2626', paddingLeft:'10px'}}>⚔️ RED TEAM</h2>
+                    {result && <SummaryModal title="ASSESSMENT" content={result} loading={loading} onClose={() => setResult(null)} />}
+                    {loading && <SummaryModal loading={true} />}
+                    <div style={styles.card}>
+                        <label style={{color: '#dc2626', fontSize: '12px'}}>SCENARIO</label>
+                        <textarea style={styles.textarea} value={scenario} onChange={e => setScenario(e.target.value)} placeholder="e.g. VIP movement in rain..." />
+                        <button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={analyze}>ANALYZE</button>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- REPORT GEN (Shift Stack V6.4) ---
+        const ReportGen = () => {
+            const [mode, setMode] = useState('manual');
+            const [data, setData] = useState({ time: "", loc: "", status: "ALL CLEAR", notes: "" });
+            const [logs, setLogs] = useStickyState([], 'sentinel_shift_logs');
+            const [report, setReport] = useState(null);
+            const [aiNotes, setAiNotes] = useState("");
+            const [loading, setLoading] = useState(false);
+            const [contacts] = useStickyState({ geminiKey: "" }, 'sentinel_contacts');
+
+            const addLog = () => {
+                if (!data.loc && !data.notes) return alert("INFO REQUIRED");
+                const now = new Date();
+                const ts = data.time || now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                setLogs(prev => [...prev, { id: Date.now(), time: ts, loc: data.loc.toUpperCase(), status: data.status, notes: data.notes }]);
+                setData({ time: "", loc: "", status: "ALL CLEAR", notes: "" });
+            };
+
+            const compile = () => {
+                if (logs.length === 0) return alert("NO LOGS");
+                let txt = `T-FORCE REPORT\nDATE: ${new Date().toLocaleDateString()}\n\n`;
+                logs.sort((a,b) => a.time.localeCompare(b.time)).forEach(l => { txt += `[${l.time}] ${l.loc}\nSTATUS: ${l.status}\nNOTES: ${l.notes}\n\n`; });
+                txt += `END OF SHIFT\nENTRIES: ${logs.length}`;
+                setReport(txt);
+            };
+
+            const generateAI = async () => {
+                if (!contacts.geminiKey) return alert("API KEY REQUIRED");
+                setLoading(true);
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${contacts.geminiKey}`, {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ contents: [{ parts: [{ text: `Role: Bodyguard. Format as Log. Notes: "${aiNotes}"` }] }] })
+                    });
+                    if (!res.ok) throw new Error("API Fail");
+                    const d = await res.json();
+                    setReport(d.candidates?.[0]?.content?.parts?.[0]?.text);
+                } catch (e) { setReport("AI FAILED. USE MANUAL LOG."); } 
+                finally { setLoading(false); }
+            };
+
+            return (
+                <div style={{padding:'16px'}}>
+                    <h2 style={{color: 'white', borderLeft: '4px solid #dc2626', paddingLeft:'10px'}}>📝 REPORT</h2>
+                    {report && <SummaryModal title="REPORT" content={report} loading={loading} onClose={() => setReport(null)} />}
+                    {loading && <SummaryModal loading={true} />}
+                    <div style={{display:'flex', gap:'10px', marginBottom:'10px'}}>
+                        <button style={{...styles.btnBase, backgroundColor: mode==='manual'?'#dc2626':'#333', fontSize:'14px'}} onClick={()=>setMode('manual')}>MANUAL</button>
+                        <button style={{...styles.btnBase, backgroundColor: mode==='ai'?'#dc2626':'#333', fontSize:'14px'}} onClick={()=>setMode('ai')}>AI</button>
+                    </div>
+                    {mode === 'ai' ? (
+                        <div style={styles.card}>
+                            <textarea style={styles.textarea} value={aiNotes} onChange={e => setAiNotes(e.target.value)} placeholder="Rough notes..." />
+                            <button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={generateAI}>GENERATE (AI)</button>
+                        </div>
+                    ) : (
+                        <div>
+                            <div style={styles.card}>
+                                <div style={{display:'flex', gap:'10px'}}>
+                                    <input style={{...styles.input, flex:1}} value={data.time} onChange={e => setData({...data, time: e.target.value})} placeholder="Time" />
+                                    <input style={{...styles.input, flex:2}} value={data.loc} onChange={e => setData({...data, loc: e.target.value})} placeholder="Location" />
+                                </div>
+                                <select style={styles.input} value={data.status} onChange={e => setData({...data, status: e.target.value})}>
+                                    <option>ALL CLEAR</option><option>SUSPICIOUS</option><option>INCIDENT</option><option>MOVEMENT</option>
+                                </select>
+                                <textarea style={{...styles.textarea, minHeight:'60px'}} value={data.notes} onChange={e => setData({...data, notes: e.target.value})} placeholder="Details..." />
+                                <button style={{...styles.btnBase, ...styles.btnPrimary, marginBottom:0}} onClick={addLog}>+ LOG ENTRY</button>
+                            </div>
+                            {logs.length > 0 && (
+                                <div style={{marginTop:'20px'}}>
+                                    <div style={{display:'flex', justifyContent:'space-between', color:'#999', fontSize:'12px'}}><span>LOGS ({logs.length})</span><span onClick={()=>confirm("Clear?")&&setLogs([])} style={{color:'#dc2626'}}>CLEAR</span></div>
+                                    <div style={{maxHeight:'200px', overflowY:'auto', border:'1px solid #333', padding:'10px', backgroundColor:'#000'}}>
+                                        {logs.map(l => <div key={l.id} style={{borderBottom:'1px solid #333', marginBottom:'5px', fontSize:'12px'}}><span style={{color:'#dc2626'}}>{l.time}</span> {l.loc} <div style={{color:'#999'}}>{l.notes||l.status}</div></div>)}
+                                    </div>
+                                    <button style={{...styles.btnBase, ...styles.btnSecondary, marginTop:'10px'}} onClick={compile}>📄 COMPILE SHIFT</button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // --- DASHBOARD ---
+        const Dashboard = ({ setView, onLogout, user }) => {
+            const [broadcasting, setBroadcasting] = useState(false);
+            const watchId = useRef(null);
+
+            const toggleBroadcast = () => {
+                if (broadcasting) {
+                    navigator.geolocation.clearWatch(watchId.current);
+                    setBroadcasting(false);
+                } else {
+                    watchId.current = navigator.geolocation.watchPosition(pos => {
+                        const { doc, setDoc, serverTimestamp } = window.fbFunctions;
+                        setDoc(doc(window.fbDb, 'locations', user.uid), {
+                            latitude: pos.coords.latitude, longitude: pos.coords.longitude,
+                            username: user.email, timestamp: serverTimestamp(), onDuty: true
+                        }, {merge: true});
+                    });
+                    setBroadcasting(true);
                 }
             };
-            const getT = (lang, key) => translations[lang][key] || translations['EN'][key] || key;
 
-            // --- HEADER & NAVIGATION ---
-            const Header = ({ setView, view, lang, setLang }) => (
-                <header>
-                    <div style={{position: 'absolute', top: '20px', left: '20px', display:'flex', gap:'5px'}}>
-                        <button onClick={() => setLang('EN')} style={{background:'none', border:'none', cursor:'pointer', opacity: lang === 'EN' ? 1 : 0.5}}>🇬🇧</button>
-                        <button onClick={() => setLang('GR')} style={{background:'none', border:'none', cursor:'pointer', opacity: lang === 'GR' ? 1 : 0.5}}>🇬🇷</button>
+            return (
+                <div style={{padding:'16px'}}>
+                    <div style={{...styles.card, borderLeft:'6px solid #dc2626', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                        <div><h2 style={{margin:0, fontSize:'24px'}}>COMMAND</h2><small style={{color: broadcasting ? '#22c55e' : '#666', fontWeight:'bold'}}>{broadcasting ? "● BROADCASTING" : "○ OFF DUTY"}</small></div>
+                        <button onClick={toggleBroadcast} style={{padding:'8px', backgroundColor: broadcasting ? '#22c55e' : '#333', border:'none', borderRadius:'4px', color:'white', fontWeight:'bold'}}>{broadcasting ? "STOP" : "GO LIVE"}</button>
                     </div>
-                    <h1><span style={{color: '#dc2626'}}>T-FORCE</span> <span style={{color:'white'}}>{getT(lang, 'CMD_CENTER')}</span></h1>
+
+                    <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginBottom:'10px'}}>
+                        <button style={{...styles.btnBase, ...styles.btnSecondary, flexDirection:'column', height:'90px'}} onClick={() => setView('intel')}><span>🔎</span> INTEL</button>
+                        <button style={{...styles.btnBase, ...styles.btnSecondary, flexDirection:'column', height:'90px'}} onClick={() => setView('scanner')}><span>📷</span> SCAN</button>
+                        <button style={{...styles.btnBase, ...styles.btnSecondary, flexDirection:'column', height:'90px'}} onClick={() => setView('gear')}><span>🎒</span> GEAR</button>
+                        <button style={{...styles.btnBase, ...styles.btnSecondary, flexDirection:'column', height:'90px'}} onClick={() => setView('report')}><span>📝</span> REPORT</button>
+                        <button style={{...styles.btnBase, ...styles.btnSecondary, flexDirection:'column', height:'90px'}} onClick={() => setView('redteam')}><span>⚔️</span> RED TEAM</button>
+                        <button style={{...styles.btnBase, ...styles.btnPrimary, flexDirection:'column', height:'90px'}} onClick={() => setView('evac')}><span>🧭</span> EVAC</button>
+                    </div>
                     
-                    <nav>
-                        <button className={`btn-secondary nav-btn ${view==='dashboard'?'active':''}`} onClick={()=>setView('dashboard')}>{getT(lang, 'CMD_CENTER')}</button>
-                        <button className={`btn-secondary nav-btn ${view==='intel'?'active':''}`} onClick={()=>setView('intel')}>{getT(lang, 'INTEL')}</button>
-                        <button className={`btn-secondary nav-btn ${view==='report'?'active':''}`} onClick={()=>setView('report')}>{getT(lang, 'REPORT')}</button>
-                        <button className={`btn-secondary nav-btn ${view==='redteam'?'active':''}`} onClick={()=>setView('redteam')}>{getT(lang, 'RED_TEAM')}</button>
-                    </nav>
-                    
-                    <button className="sign-out-btn" onClick={() => window.fbFuncs.signOut(window.fbAuth)}>{getT(lang, 'SIGN_OUT')}</button>
-                </header>
+                    <button style={{...styles.btnBase, backgroundColor:'#333', fontSize:'12px'}} onClick={onLogout}>LOGOUT</button>
+                </div>
             );
+        };
 
-            // --- LOGIN COMPONENT ---
-            const Login = ({ setLang }) => {
-                const [email, setEmail] = useState("");
-                const [pass, setPass] = useState("");
-                const [localLang, setLocalLang] = useState('EN'); 
+        // --- CRISIS, GEAR, SETTINGS ---
+        const GearChecklist = () => { const [active, setActive] = useState(null); const [checks, setChecks] = useStickyState({}, 'gear'); const toggle = (id) => setChecks(p => ({...p, [id]: !p[id]})); const lists = { club: {t:"NIGHT CLUB", i:["Comms", "Strobe", "Armor", "IFAK"]}, villa: {t:"VILLA", i:["Keys", "Codes", "Torch", "CCTV"]}, factory: {t:"FACTORY", i:["Vest", "Helmet", "Boots", "Log"]}, vip: {t:"VIP", i:["Go Bag", "Meds", "Blanket", "Maps"]} }; return active ? <div style={{padding:'16px'}}><button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={()=>setActive(null)}>BACK</button><h2 style={{color:'white'}}>{lists[active].t}</h2>{lists[active].i.map((item,i)=><div key={i} onClick={()=>toggle(`${active}-${i}`)} style={{...styles.card, opacity: checks[`${active}-${i}`]?0.4:1, border: checks[`${active}-${i}`]?'1px solid #333':'1px solid #dc2626'}}>{item} {checks[`${active}-${i}`]&&'✓'}</div>)}</div> : <div style={{padding:'16px'}}><h2 style={{color:'white'}}>GEAR</h2>{Object.entries(lists).map(([k,v])=><button key={k} style={{...styles.btnBase, ...styles.btnSecondary}} onClick={()=>setActive(k)}>{v.t}</button>)}</div>; };
+        const EvacMap = () => { const [coords, setCoords] = useState(null); useEffect(() => { if ("geolocation" in navigator) navigator.geolocation.getCurrentPosition(p => setCoords({lat: p.coords.latitude.toFixed(5), lng: p.coords.longitude.toFixed(5)})); }, []); const routeTo = (dest) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`, '_blank'); return (<div style={{ padding: '16px' }}><h2 style={{color:'white'}}>EVAC</h2><div style={styles.card}>{coords ? `${coords.lat}, ${coords.lng}` : "LOCATING..."}</div><button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={() => routeTo('hospital')}>🏥 HOSPITAL</button><button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={() => routeTo('police station')}>👮 POLICE</button></div>); };
+        const CrisisMode = () => { const [mode, setMode] = useState(null); const [contacts] = useStickyState({ police: "100", ambulance: "166" }, 'contacts'); const p = { medical: {t:"MEDICAL", s:["SECURE", "TRIAGE", "EMS"], c:contacts.ambulance}, arrest: {t:"ARREST", s:["SILENCE", "LAWYER"], c:contacts.fixer}, attack: {t:"ATTACK", s:["COVER", "FIRE", "EVAC"], c:contacts.police} }; return mode ? <div style={{padding:'16px'}}><button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={()=>setMode(null)}>BACK</button><div style={{...styles.card, background:'#3f0000', textAlign:'center'}}><h1>{mode}</h1></div>{p[mode].s.map(s=><div style={{...styles.card}}>{s}</div>)}<a href={`tel:${p[mode].c}`} style={{...styles.btnBase, background:'#22c55e', textDecoration:'none', color:'black'}}>CALL</a></div> : <div style={{padding:'16px'}}><h2 style={{color:'#dc2626'}}>CRISIS</h2><button style={{...styles.btnBase, ...styles.btnDanger}} onClick={()=>setMode('medical')}>MEDICAL</button><button style={{...styles.btnBase, background:'#333', color:'white', border:'1px solid white'}} onClick={()=>setMode('attack')}>ATTACK</button><button style={{...styles.btnBase, background:'#d97706', color:'black'}} onClick={()=>setMode('arrest')}>ARREST</button></div>; };
+        
+        // --- NEW: SECURE SETTINGS MODULE ---
+        const Settings = ({ close }) => {
+            const [contacts, setContacts] = useStickyState({ police: "100", ambulance: "166", embassy: "", geminiKey: "" }, 'sentinel_contacts');
+            const [showKey, setShowKey] = useState(false);
+            const handleChg = (key, val) => setContacts(p => ({...p, [key]: val}));
+            const panicWipe = () => { if(window.confirm("CONFIRM: WIPE ALL DATA?")) { localStorage.clear(); window.location.reload(); } };
+            
+            const hasKey = contacts.geminiKey && contacts.geminiKey.length > 5;
 
-                const handleLogin = (e) => {
-                    e.preventDefault();
-                    window.fbFuncs.signInWithEmailAndPassword(window.fbAuth, email, pass).catch(err => alert(err.message));
-                };
-
-                return (
-                    <div className="login-container">
-                        <div className="login-box">
-                            <div style={{position: 'absolute', top: '10px', right: '10px', display:'flex', gap:'5px'}}>
-                                 <button onClick={() => { setLocalLang('EN'); setLang('EN'); }} style={{background:'none', border:'none', cursor:'pointer', opacity: localLang === 'EN' ? 1 : 0.5}}>🇬🇧</button>
-                                 <button onClick={() => { setLocalLang('GR'); setLang('GR'); }} style={{background:'none', border:'none', cursor:'pointer', opacity: localLang === 'GR' ? 1 : 0.5}}>🇬🇷</button>
+            return (
+                <div style={{padding:'16px'}}>
+                    <h3>CONFIGURATION</h3>
+                    <div style={styles.card}>
+                        <label style={{fontSize:'12px', color:'#dc2626', fontWeight:'bold'}}>AI UPLINK STATUS</label>
+                        {!showKey && hasKey ? (
+                            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px', backgroundColor:'#000', border:'1px solid #22c55e', borderRadius:'2px', marginBottom:'12px'}}>
+                                <span style={{color:'#22c55e', fontWeight:'bold'}}>● SYSTEM ONLINE</span>
+                                <button style={{background:'none', border:'none', color:'#666', fontSize:'10px', textDecoration:'underline'}} onClick={() => setShowKey(true)}>CHANGE KEY</button>
                             </div>
-                            <h2>{getT(localLang, 'LOGIN')}</h2>
-                            <form onSubmit={handleLogin}>
-                                <input className="input-field" type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
-                                <input className="input-field" type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} required />
-                                <button type="submit" className="btn-primary">{getT(localLang, 'AUTHENTICATE')}</button>
-                            </form>
-                        </div>
+                        ) : (
+                            <div style={{marginBottom:'12px'}}>
+                                <input style={{...styles.input, borderColor: '#dc2626'}} type="password" value={contacts.geminiKey} onChange={e => handleChg('geminiKey', e.target.value)} placeholder="ENTER API KEY" />
+                                {hasKey && <button style={{fontSize:'10px', color:'#999', background:'none', border:'none', marginTop:'5px'}} onClick={() => setShowKey(false)}>CANCEL EDIT</button>}
+                            </div>
+                        )}
+                        <label style={{fontSize:'12px', color:'#999'}}>POLICE</label>
+                        <input style={styles.input} value={contacts.police} onChange={e => handleChg('police', e.target.value)} />
+                        <label style={{fontSize:'12px', color:'#999'}}>AMBULANCE</label>
+                        <input style={styles.input} value={contacts.ambulance} onChange={e => handleChg('ambulance', e.target.value)} />
+                        <label style={{fontSize:'12px', color:'#999'}}>EMBASSY</label>
+                        <input style={styles.input} value={contacts.embassy} onChange={e => handleChg('embassy', e.target.value)} />
                     </div>
-                );
-            };
+                    <button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={close}>💾 SAVE CONFIG</button>
+                    <div style={{marginTop: '30px', borderTop:'1px solid #333', paddingTop:'20px'}}> <button style={{...styles.btnBase, backgroundColor: 'transparent', border:'2px solid #dc2626', color:'#dc2626'}} onClick={panicWipe}>☢️ PANIC WIPE</button> </div>
+                </div>
+            );
+        };
 
-            // --- DASHBOARD ---
-            const Dashboard = ({ setView, user, lang }) => {
-                const [broadcasting, setBroadcasting] = useState(false);
-                const toggleBroadcast = () => setBroadcasting(!broadcasting);
-                
-                return (
-                    <div style={{padding:'16px'}}>
-                        <div style={{backgroundColor:'#111', padding:'16px', borderLeft:'6px solid #dc2626', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                            <div><h2 style={{margin:0, fontSize:'24px'}}>{user.email.split('@')[0].toUpperCase()}</h2><small style={{color: broadcasting ? '#22c55e' : '#666', fontWeight:'bold'}}>{broadcasting ? `● ${getT(lang, 'BROADCASTING')}` : `○ ${getT(lang, 'OFF_DUTY')}`}</small></div>
-                            <button onClick={toggleBroadcast} className="btn-secondary" style={{padding:'8px', backgroundColor: broadcasting ? '#22c55e' : '#333', border:'none'}}>{broadcasting ? getT(lang, 'STOP') : getT(lang, 'GO_LIVE')}</button>
-                        </div>
-                        <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px', marginTop:'16px'}}>
-                            <button className="btn-secondary" onClick={() => setView('intel')}>🔎 {getT(lang, 'INTEL')}</button>
-                            <button className="btn-secondary" onClick={() => setView('scanner')}>📷 {getT(lang, 'SCAN_LOGS')}</button>
-                            <button className="btn-secondary" onClick={() => setView('gear')}>🎒 {getT(lang, 'GEAR')}</button>
-                            <button className="btn-secondary" onClick={() => setView('report')}>📝 {getT(lang, 'REPORT')}</button>
-                            <button className="btn-secondary" onClick={() => setView('redteam')}>⚔️ {getT(lang, 'RED_TEAM')}</button>
-                            <button className="btn-primary" onClick={() => setView('evac')}>🧭 {getT(lang, 'EVAC')}</button>
-                        </div>
-                    </div>
-                );
-            };
+        // --- MAIN APP ---
+        function App() {
+            const [view, setView] = useState('dashboard');
+            const [user, setUser] = useState(null);
+            const [fbReady, setFbReady] = useState(false);
 
-            // --- MODULES (Placeholder Logic) ---
-            const IntelHub = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>{getT(lang, 'INTEL')} HUB</h2></div>); };
-            const QRScanner = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>📷 {getT(lang, 'SCAN_LOGS')}</h2></div>); };
-            const GearChecklist = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>🎒 {getT(lang, 'GEAR')}</h2></div>); };
-            const ReportGen = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>📝 {getT(lang, 'REPORT')}</h2></div>); };
-            const RedTeam = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>⚔️ {getT(lang, 'RED_TEAM')}</h2></div>); };
-            const EvacMap = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'white', borderLeft:'4px solid #dc2626', paddingLeft:'10px'}}>🧭 {getT(lang, 'EVAC')}</h2></div>); };
-            const CrisisMode = ({ lang }) => { return (<div style={{padding:'16px'}}><h2 style={{color:'#dc2626'}}>🚨 {getT(lang, 'CRISIS')}</h2></div>); };
-            const Settings = ({ lang, close }) => { return (<div style={{padding:'16px'}}><h3>⚙️ {getT(lang, 'SETTINGS')}</h3><button className="btn-primary" onClick={close}>{getT(lang, 'SAVE')}</button></div>); };
+            useEffect(() => {
+                const initListener = () => { setFbReady(true); window.fbFunctions.onAuthStateChanged(window.fbAuth, u => setUser(u)); };
+                window.addEventListener('firebase-ready', initListener);
+                if(window.fbAuth) initListener();
+                return () => window.removeEventListener('firebase-ready', initListener);
+            }, []);
 
-            // --- ROOT COMPONENT ---
-            function SentinelApp() {
-                const [user, setUser] = useState(null);
-                const [fbReady, setFbReady] = useState(false);
-                const [view, setView] = useState('dashboard');
-                const [lang, setLang] = useStickyState('EN', 'sentinel_lang');
+            if (!fbReady) return <div style={{...styles.app, display:'flex', justifyContent:'center', alignItems:'center'}}>INITIALIZING...</div>;
+            if (!user) return <AuthScreen />;
 
-                useEffect(() => {
-                    const init = () => {
-                        if(window.fbFuncs && window.fbAuth) {
-                            window.fbFuncs.onAuthStateChanged(window.fbAuth, (u) => { 
-                                setUser(u); 
-                                setFbReady(true); 
-                            });
-                        }
-                    };
-                    
-                    if(window.fbAuth) init();
-                    window.addEventListener('firebase-ready', init);
-                }, []);
-
-                if(!fbReady) return <div style={{color:'#dc2626', display:'flex', justifyContent:'center', alignItems:'center', height:'100vh', fontSize:'24px', letterSpacing:'2px'}}>INITIALIZING SYSTEM...</div>;
-                
-                if (!user) return <Login setLang={setLang} />;
-
-                return (
-                    <div className="app-container">
-                        <Header setView={setView} view={view} lang={lang} setLang={setLang} />
-
-                        <main>
-                            {view === 'dashboard' && <Dashboard setView={setView} user={user} lang={lang} />}
-                            {view === 'intel' && <IntelHub lang={lang} />}
-                            {view === 'scanner' && <QRScanner lang={lang} />}
-                            {view === 'gear' && <GearChecklist lang={lang} />}
-                            {view === 'report' && <ReportGen lang={lang} />}
-                            {view === 'redteam' && <RedTeam lang={lang} />}
-                            {view === 'evac' && <EvacMap lang={lang} />}
-                            {view === 'crisis' && <CrisisMode lang={lang} />}
-                            {view === 'settings' && <Settings lang={lang} close={() => setView('dashboard')} />}
-                        </main>
-
-                        <div className="nav">
-                            <button className={`nav-item ${view==='scanner'?'active':''}`} onClick={()=>setView('scanner')}><span style={{fontSize:'24px'}}>📷</span></button>
-                            <button className={`nav-item ${view==='gear'?'active':''}`} onClick={()=>setView('gear')}><span style={{fontSize:'24px'}}>🎒</span></button>
-                            <div style={{position:'relative', top:'-5px'}}><button onClick={() => setView('crisis')} className="nav-item" style={{width:'64px', height:'64px', borderRadius:'50%', border:'4px solid #000', backgroundColor:'#dc2626', color:'white', fontSize:'28px', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 15px rgba(220, 38, 38, 0.4)'}}>🚨</button></div>
-                            <button className={`nav-item ${view==='evac'?'active':''}`} onClick={()=>setView('evac')}><span style={{fontSize:'24px'}}>🧭</span></button>
-                            <button className={`nav-item ${view==='settings'?'active':''}`} onClick={() => setView('settings')}><span style={{fontSize:'24px'}}>⚙️</span></button>
-                        </div>
-                    </div>
-                );
-            }
-
-            // --- FINAL RENDER CALL (Legacy Method) ---
-            ReactDOM.render(<SentinelApp />, document.getElementById('root'));
-        })();
-    </script>
-</body>
-</html>
-
+            return (
+                <div style={styles.app}>
+                    <Header setView={setView} />
+                    {view === 'dashboard' && <Dashboard setView={setView} user={user} onLogout={()=>window.fbFunctions.signOut(window.fbAuth)} />}
+                    {view === 'intel' && <IntelHub />}
+                    {view === 'scanner' && <QRScanner />}
+                    {view === 'gear' && <GearChecklist />}
+                    {view === 'report' && <ReportGen />}
+                    {view === 'redteam' && <RedTeam />}
+                    {view === 'evac' && <EvacMap />}
+                    {view =
