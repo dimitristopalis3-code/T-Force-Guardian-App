@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- BRANDING: App Icons -->
+    <link rel="icon" type="image/png" href="./Tforcelogo1(1).png">
+    <link rel="apple-touch-icon" href="./Tforcelogo1(1).png">
     
     <!-- SECURITY: CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.tailwindcss.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com https://en.wikipedia.org https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com; img-src 'self' data: https: blob:;">
     
-    <title>T-FORCE SENTINEL CMD</title>
+    <title>T-FORCE SENTINEL</title>
 
     <!-- Font: Rajdhani -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +29,7 @@
 
     <style>
         :root { --bg-color: #000000; --card-bg: #111111; --text-main: #ffffff; --text-muted: #9ca3af; --brand-red: #dc2626; --border-color: #27272a; }
-        body { margin: 0; padding: 0; background-color: var(--bg-color); color: var(--text-main); user-select: none; -webkit-tap-highlight-color: transparent; font-family: 'Rajdhani', sans-serif; }
+        body { margin: 0; padding: 0; background-color: #111; color: var(--text-main); user-select: none; -webkit-tap-highlight-color: transparent; font-family: 'Rajdhani', sans-serif; display: flex; justify-content: center; }
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #000; }
@@ -36,7 +40,7 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root" style="width: 100%; max-width: 480px; background-color: #000; min-height: 100vh; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5);"></div>
     <div id="crash-screen"></div>
 
     <!-- FIREBASE BRIDGE -->
@@ -76,7 +80,7 @@
 
         // --- STYLES ---
         const styles = {
-          app: { fontFamily: "'Rajdhani', sans-serif", backgroundColor: '#000000', color: '#ffffff', minHeight: '100vh', paddingBottom: '90px', maxWidth: '100%', margin: '0 auto', overflowX: 'hidden' },
+          app: { fontFamily: "'Rajdhani', sans-serif", backgroundColor: '#000000', color: '#ffffff', minHeight: '100vh', paddingBottom: '90px', width: '100%', overflowX: 'hidden' },
           header: { position: 'sticky', top: 0, backgroundColor: 'rgba(0, 0, 0, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '2px solid #dc2626', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 1000 },
           card: { backgroundColor: '#111111', border: '1px solid #333333', borderRadius: '4px', padding: '16px', marginBottom: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.5)' },
           btnBase: { width: '100%', padding: '16px', border: 'none', borderRadius: '2px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '18px', marginBottom: '10px', transition: 'all 0.1s' },
@@ -84,7 +88,7 @@
           btnSecondary: { backgroundColor: '#1f1f1f', color: '#e5e7eb', border: '1px solid #333' },
           input: { width: '100%', padding: '14px', backgroundColor: '#000000', border: '1px solid #333', color: 'white', borderRadius: '2px', marginBottom: '12px', fontSize: '16px', fontFamily: "'Rajdhani', sans-serif" },
           textarea: { width: '100%', padding: '14px', backgroundColor: '#000000', border: '1px solid #333', color: 'white', borderRadius: '2px', marginBottom: '12px', fontSize: '16px', fontFamily: "'Rajdhani', sans-serif", minHeight: '100px' },
-          nav: { position: 'fixed', bottom: 0, left: 0, right: 0, backgroundColor: '#000000', borderTop: '2px solid #333', display: 'flex', justifyContent: 'space-around', padding: '12px 10px', zIndex: 1000, paddingBottom: '20px' },
+          nav: { position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: '480px', backgroundColor: '#000000', borderTop: '2px solid #333', display: 'flex', justifyContent: 'space-around', padding: '12px 10px', zIndex: 1000, paddingBottom: '20px' },
           navItem: { background: 'none', border: 'none', color: '#6b7280', fontSize: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: "'Rajdhani', sans-serif", fontWeight: '600' },
           logoText: { fontWeight: 'bold', fontSize: '22px', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '8px' }
         };
@@ -95,7 +99,7 @@
           return [value, setValue];
         };
 
-        // --- HEADER (RESTORED) ---
+        // --- HEADER ---
         const Header = ({ setView }) => (
           <div style={styles.header}>
             <div onClick={() => setView('dashboard')} style={styles.logoText}>
@@ -149,8 +153,8 @@
 
         // --- SHARED MODAL ---
         const SummaryModal = ({ title, content, links, loading, onClose }) => (
-            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '20px', paddingTop: '60px' }}>
-                <div style={{...styles.card, flex: 1, overflowY: 'auto', border: '1px solid #dc2626'}}>
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '20px', paddingTop: '60px', alignItems: 'center' }}>
+                <div style={{...styles.card, flex: 1, width: '100%', maxWidth: '480px', overflowY: 'auto', border: '1px solid #dc2626'}}>
                     <h2 style={{color: '#dc2626', marginTop: 0, borderBottom: '1px solid #333', paddingBottom: '10px'}}>{loading ? "PROCESSING..." : title}</h2>
                     {loading ? <div style={{textAlign: 'center', marginTop: '50px', color: '#dc2626'}}>⟳ ANALYZING DATA...</div> : (
                         <div className="ai-content" style={{lineHeight: '1.6', fontSize: '16px', whiteSpace: 'pre-wrap'}}>
@@ -164,7 +168,7 @@
                         </div>
                     )}
                 </div>
-                <button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={onClose}>CLOSE</button>
+                <button style={{...styles.btnBase, ...styles.btnSecondary, maxWidth: '480px'}} onClick={onClose}>CLOSE</button>
             </div>
         );
 
@@ -176,7 +180,6 @@
                     (decodedText) => {
                         alert("CHECKPOINT LOGGED: " + decodedText);
                         scanner.stop();
-                        // Add log logic here if needed
                     }, (err) => {}
                 );
                 return () => { try { scanner.stop(); } catch(e){} };
@@ -399,7 +402,7 @@
             );
         };
 
-        // --- DASHBOARD (Reorganized) ---
+        // --- DASHBOARD ---
         const Dashboard = ({ setView, onLogout, user }) => {
             const [broadcasting, setBroadcasting] = useState(false);
             const watchId = useRef(null);
@@ -441,7 +444,7 @@
             );
         };
 
-        // --- CRISIS, GEAR, SETTINGS (Standard) ---
+        // --- CRISIS, GEAR, SETTINGS ---
         const GearChecklist = () => { const [active, setActive] = useState(null); const [checks, setChecks] = useStickyState({}, 'gear'); const toggle = (id) => setChecks(p => ({...p, [id]: !p[id]})); const lists = { club: {t:"NIGHT CLUB", i:["Comms", "Strobe", "Armor", "IFAK"]}, villa: {t:"VILLA", i:["Keys", "Codes", "Torch", "CCTV"]}, factory: {t:"FACTORY", i:["Vest", "Helmet", "Boots", "Log"]}, vip: {t:"VIP", i:["Go Bag", "Meds", "Blanket", "Maps"]} }; return active ? <div style={{padding:'16px'}}><button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={()=>setActive(null)}>BACK</button><h2 style={{color:'white'}}>{lists[active].t}</h2>{lists[active].i.map((item,i)=><div key={i} onClick={()=>toggle(`${active}-${i}`)} style={{...styles.card, opacity: checks[`${active}-${i}`]?0.4:1, border: checks[`${active}-${i}`]?'1px solid #333':'1px solid #dc2626'}}>{item} {checks[`${active}-${i}`]&&'✓'}</div>)}</div> : <div style={{padding:'16px'}}><h2 style={{color:'white'}}>GEAR</h2>{Object.entries(lists).map(([k,v])=><button key={k} style={{...styles.btnBase, ...styles.btnSecondary}} onClick={()=>setActive(k)}>{v.t}</button>)}</div>; };
         const EvacMap = () => { const [coords, setCoords] = useState(null); useEffect(() => { if ("geolocation" in navigator) navigator.geolocation.getCurrentPosition(p => setCoords({lat: p.coords.latitude.toFixed(5), lng: p.coords.longitude.toFixed(5)})); }, []); const routeTo = (dest) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`, '_blank'); return (<div style={{ padding: '16px' }}><h2 style={{color:'white'}}>EVAC</h2><div style={styles.card}>{coords ? `${coords.lat}, ${coords.lng}` : "LOCATING..."}</div><button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={() => routeTo('hospital')}>🏥 HOSPITAL</button><button style={{...styles.btnBase, ...styles.btnPrimary}} onClick={() => routeTo('police station')}>👮 POLICE</button></div>); };
         const CrisisMode = () => { const [mode, setMode] = useState(null); const [contacts] = useStickyState({ police: "100", ambulance: "166" }, 'contacts'); const p = { medical: {t:"MEDICAL", s:["SECURE", "TRIAGE", "EMS"], c:contacts.ambulance}, arrest: {t:"ARREST", s:["SILENCE", "LAWYER"], c:contacts.fixer}, attack: {t:"ATTACK", s:["COVER", "FIRE", "EVAC"], c:contacts.police} }; return mode ? <div style={{padding:'16px'}}><button style={{...styles.btnBase, ...styles.btnSecondary}} onClick={()=>setMode(null)}>BACK</button><div style={{...styles.card, background:'#3f0000', textAlign:'center'}}><h1>{mode}</h1></div>{p[mode].s.map(s=><div style={{...styles.card}}>{s}</div>)}<a href={`tel:${p[mode].c}`} style={{...styles.btnBase, background:'#22c55e', textDecoration:'none', color:'black'}}>CALL</a></div> : <div style={{padding:'16px'}}><h2 style={{color:'#dc2626'}}>CRISIS</h2><button style={{...styles.btnBase, ...styles.btnDanger}} onClick={()=>setMode('medical')}>MEDICAL</button><button style={{...styles.btnBase, background:'#333', color:'white', border:'1px solid white'}} onClick={()=>setMode('attack')}>ATTACK</button><button style={{...styles.btnBase, background:'#d97706', color:'black'}} onClick={()=>setMode('arrest')}>ARREST</button></div>; };
