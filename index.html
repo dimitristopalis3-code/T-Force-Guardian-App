@@ -95,6 +95,17 @@
           return [value, setValue];
         };
 
+        // --- HEADER (RESTORED) ---
+        const Header = ({ setView }) => (
+          <div style={styles.header}>
+            <div onClick={() => setView('dashboard')} style={styles.logoText}>
+              <img src="./Tforcelogo1(1).png" alt="T-FORCE" style={{height: '35px', objectFit: 'contain'}} onError={(e) => {e.target.style.display='none'; document.getElementById('fallback-logo').style.display='block'}} />
+              <div id="fallback-logo" style={{display: 'none'}}><span style={{color:'white'}}>T-FORCE</span><span style={{color:'#dc2626'}}>SEC</span></div>
+            </div>
+            <div onClick={() => setView('settings')} style={{ fontSize: '24px', color: '#dc2626' }}>⚙️</div>
+          </div>
+        );
+
         // --- AUTH ---
         const AuthScreen = () => {
             const [isLogin, setIsLogin] = useState(true);
@@ -157,7 +168,7 @@
             </div>
         );
 
-        // --- QR SCANNER (From Guardian) ---
+        // --- QR SCANNER ---
         const QRScanner = () => {
             useEffect(() => {
                 const scanner = new Html5Qrcode("reader");
