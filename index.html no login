@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>T-FORCE SENTINEL CMD</title>
+    <title>T-FORCE SENTINEL</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,7 @@
     <style>
         :root { --bg-color: #000000; --card-bg: #111111; --primary-red: #dc2626; --text-main: #ffffff; --text-muted: #9ca3af; --border-color: #333333; --success-color: #22c55e; }
         body { margin: 0; padding: 0; height: 100%; box-sizing: border-box; background-color: var(--bg-color); color: var(--text-main); font-family: 'Rajdhani', sans-serif; display: flex; justify-content: center; }
-        #root { width: 100%; max-width: 480px; background-color: var(--bg-color); min-height: 100vh; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        #root { width: 100%; max-width: 480px; background-color: #000; min-height: 100vh; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         .hidden { display: none !important; }
         .app-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
         
@@ -54,8 +54,8 @@
     <!-- FIREBASE BRIDGE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBwhzGsK-ah7ObMOgpRDlzGghycLNinm6g",
@@ -70,14 +70,14 @@
             const app = initializeApp(firebaseConfig);
             window.fbAuth = getAuth(app);
             window.fbDb = getFirestore(app);
-            window.fbFuncs = { onAuthStateChanged, signInWithEmailAndPassword, signOut, collection, onSnapshot, doc, setDoc, serverTimestamp, getDoc, createUserWithEmailAndPassword };
+            window.fbFuncs = { signInAnonymously, collection, addDoc, doc, setDoc, serverTimestamp };
             window.dispatchEvent(new Event('firebase-ready'));
         } catch (e) {
             console.error("Firebase Init Error:", e);
         }
     </script>
 
-    <!-- APP LOGIC (V8.5) -->
+    <!-- APP LOGIC (V9.0) -->
     <script type="text/babel">
         (function() {
             const { useState, useEffect, useRef } = React;
@@ -89,79 +89,80 @@
                 return [value, setValue];
             };
             
+            const getT = (lang, key) => translations[lang][key] || translations['EN'][key] || key;
+            const fmtDate = (ts) => { if (!ts) return "PENDING"; return new Date().toLocaleTimeString(); }; // Local time fallback
+
             // --- LANGUAGE CORE ---
             const translations = {
                 EN: {
-                    LOGIN: "LOGIN", AUTHENTICATE: "AUTHENTICATE", SIGN_OUT: "SIGN OUT", ON_DUTY: "ON DUTY", OFF_DUTY: "OFF DUTY", CMD_CENTER: "SENTINEL", INTEL: "INTEL", GEAR: "GEAR", REPORT: "REPORT", RED_TEAM: "RED TEAM", EVAC: "EVAC", CRISIS: "CRISIS", MEDICAL: "MEDICAL", ATTACK: "ATTACK", ARREST: "ARREST",
+                    LOGIN: "LOGIN", SIGN_OUT: "DISCONNECT", ON_DUTY: "ON DUTY", OFF_DUTY: "OFF DUTY", CMD_CENTER: "SENTINEL", INTEL: "INTEL", GEAR: "GEAR", REPORT: "REPORT", RED_TEAM: "RED TEAM", EVAC: "EVAC", CRISIS: "CRISIS", MEDICAL: "MEDICAL", ATTACK: "ATTACK", ARREST: "ARREST",
                     AREA: "OPERATION AREA", SITREP: "SITREP", HEATMAP: "HEATMAP", TARGET: "TARGET VETTING", DEEP_SCAN: "DEEP SCAN", LOG_ENTRY: "LOG ENTRY", COMPILE: "COMPILE SHIFT", MANUAL: "MANUAL", AI_WRITER: "AI WRITER", ROUGH_NOTES: "ROUGH NOTES", COORDS: "COORDINATES", TIME: "TIME", LOCATION: "LOCATION", DETAILS: "DETAILS", SAVE: "SAVE", API_KEY: "API KEY", STOP: "STOP", GO_LIVE: "GO LIVE", SCENARIO: "SCENARIO", ANALYZE: "ANALYZE", SETTINGS: "SETTINGS", BACK: "BACK", POLICE: "POLICE", SCAN_LOGS: "SCAN LOGS", START_SCAN: "START SCAN", CANCEL: "CANCEL", AMBULANCE: "AMBULANCE", SYSTEM_ONLINE: "SYSTEM ONLINE", LOCATING: "LOCATING...", PHONE: "PHONE",
-                    NIGHT_CLUB: "NIGHT CLUB", VILLA_OPS: "VILLA OPS", FACTORY: "FACTORY/SITE", VIP_PROT: "VIP PROTECTION", GEAR_LIST: { "Comms": "Comms/Earpiece", "Strobe": "Strobe Light", "Armor": "Soft Armor", "IFAK": "IFAK/Medkit", "Keys": "Perimeter Keys", "Torch": "High-Lumen Torch", "CCTV": "CCTV Monitor", "Vest": "High-Vis Vest", "Helmet": "Hard Hat" },
+                    OFFICER_NAME: "OFFICER NAME (CALLSIGN)", ENTER_NAME: "ENTER CALLSIGN", SET_IDENTITY: "SET IDENTITY",
+                    NIGHT_CLUB: "NIGHT CLUB", VILLA_OPS: "VILLA OPS", FACTORY: "FACTORY/SITE", VIP_PROT: "VIP PROTECTION", GEAR_LIST: { "Comms": "Comms/Earpiece", "Strobe": "Strobe Light", "Armor": "Soft Armor", "IFAK": "IFAK/Medkit", "Keys": "Perimeter Keys", "Torch": "High-Lumen Torch", "CCTV": "CCTV Monitor", "Vest": "High-Vis Vest", "Helmet": "Hard Hat" }, ANALYSIS_PLACEHOLDER: "Manual analysis: No specific keywords found. Use standard threat protocols."
                 },
                 GR: {
-                    LOGIN: "ΣΥΝΔΕΣΗ", AUTHENTICATE: "ΤΑΥΤΟΠΟΙΗΣΗ", SIGN_OUT: "ΑΠΟΣΥΝΔΕΣΗ", ON_DUTY: "ΣΕ ΥΠΗΡΕΣΙΑ", OFF_DUTY: "ΕΚΤΟΣ ΥΠΗΡΕΣΙΑΣ", CMD_CENTER: "SENTINEL", INTEL: "ΠΛΗΡΟΦΟΡΙΕΣ", GEAR: "ΕΞΟΠΛΙΣΜΟΣ", REPORT: "ΑΝΑΦΟΡΑ", RED_TEAM: "RED TEAM", EVAC: "ΕΚΚΕΝΩΣΗ", CRISIS: "ΚΡΙΣΗ", MEDICAL: "ΙΑΤΡΙΚΟ", ATTACK: "ΕΠΙΘΕΣΗ", ARREST: "ΣΥΛΛΗΨΗ",
-                    AREA: "ΠΕΡΙΟΧΗ", SITREP: "ΚΑΤΑΣΤΑΣΗ", HEATMAP: "ΧΑΡΤΗΣ ΕΓΚΛΗΜΑΤΩΝ", TARGET: "ΕΛΕΓΧΟΣ ΣΤΟΧΟΥ", DEEP_SCAN: "ΒΑΘΙΑ ΣΑΡΩΣΗ", LOG_ENTRY: "ΕΙΣΟΔΟΣ ΑΡΧΕΙΟΥ", COMPILE: "ΣΥΝΤΑΞΗ ΒΑΡΔΙΑΣ", MANUAL: "ΧΕΙΡΟΚΙΝΗΤΟ", AI_WRITER: "AI ΣΥΝΤΑΚΤΗΣ", ROUGH_NOTES: "ΠΡΟΧΕΙΡΕΣ ΣΗΜΕΙΩΣΕΙΣ", COORDS: "ΣΥΝΤΕΤΑΓΜΕΝΕΣ", NO_ACTIVE_UNITS: "ΔΕΝ ΒΡΕΘΗΚΑΝ ΕΝΕΡΓΕΣ ΜΟΝΑΔΕΣ", TIME: "ΩΡΑ", LOCATION: "ΤΟΠΟΘΕΣΙΑ", DETAILS: "ΛΕΠΤΟΜΕΡΕΙΕΣ", SAVE: "ΑΠΟΘΗΚΕΥΣΗ", API_KEY: "ΚΛΕΙΔΙ API", STOP: "ΠΑΥΣΗ", GO_LIVE: "ΕΝΑΡΞΗ", SCENARIO: "ΣΕΝΑΡΙΟ", ANALYZE: "ΑΝΑΛΥΣΗ", SETTINGS: "ΡΥΘΜΙΣΕΙΣ", BACK: "ΠΙΣΩ", POLICE: "ΑΣΤΥΝΟΜΙΑ", SCAN_LOGS: "ΣΑΡΩΣΗ ΑΡΧΕΙΟΥ", START_SCAN: "ΕΝΑΡΞΗ ΣΑΡΩΣΗΣ", CANCEL: "ΑΚΥΡΩΣΗ", AMBULANCE: "ΑΣΘΕΝΟΦΑΡΟ", SYSTEM_ONLINE: "ΣΥΣΤΗΜΑ ΕΝΕΡΓΟ", LOCATING: "ΕΝΤΟΠΙΣΜΟΣ", PHONE: "ΤΗΛΕΦΩΝΟ"
+                    LOGIN: "ΣΥΝΔΕΣΗ", SIGN_OUT: "ΑΠΟΣΥΝΔΕΣΗ", ON_DUTY: "ΣΕ ΥΠΗΡΕΣΙΑ", OFF_DUTY: "ΕΚΤΟΣ ΥΠΗΡΕΣΙΑΣ", CMD_CENTER: "SENTINEL", INTEL: "ΠΛΗΡΟΦΟΡΙΕΣ", GEAR: "ΕΞΟΠΛΙΣΜΟΣ", REPORT: "ΑΝΑΦΟΡΑ", RED_TEAM: "RED TEAM", EVAC: "ΕΚΚΕΝΩΣΗ", CRISIS: "ΚΡΙΣΗ", MEDICAL: "ΙΑΤΡΙΚΟ", ATTACK: "ΕΠΙΘΕΣΗ", ARREST: "ΣΥΛΛΗΨΗ",
+                    AREA: "ΠΕΡΙΟΧΗ", SITREP: "ΚΑΤΑΣΤΑΣΗ", HEATMAP: "ΧΑΡΤΗΣ ΕΓΚΛΗΜΑΤΩΝ", TARGET: "ΕΛΕΓΧΟΣ ΣΤΟΧΟΥ", DEEP_SCAN: "ΒΑΘΙΑ ΣΑΡΩΣΗ", LOG_ENTRY: "ΕΙΣΟΔΟΣ ΑΡΧΕΙΟΥ", COMPILE: "ΣΥΝΤΑΞΗ ΒΑΡΔΙΑΣ", MANUAL: "ΧΕΙΡΟΚΙΝΗΤΟ", AI_WRITER: "AI ΣΥΝΤΑΚΤΗΣ", ROUGH_NOTES: "ΠΡΟΧΕΙΡΕΣ ΣΗΜΕΙΩΣΕΙΣ", COORDS: "ΣΥΝΤΕΤΑΓΜΕΝΕΣ", TIME: "ΩΡΑ", LOCATION: "ΤΟΠΟΘΕΣΙΑ", DETAILS: "ΛΕΠΤΟΜΕΡΕΙΕΣ", SAVE: "ΑΠΟΘΗΚΕΥΣΗ", API_KEY: "ΚΛΕΙΔΙ API", STOP: "ΠΑΥΣΗ", GO_LIVE: "ΕΝΑΡΞΗ", SCENARIO: "ΣΕΝΑΡΙΟ", ANALYZE: "ΑΝΑΛΥΣΗ", SETTINGS: "ΡΥΘΜΙΣΕΙΣ", BACK: "ΠΙΣΩ", POLICE: "ΑΣΤΥΝΟΜΙΑ", SCAN_LOGS: "ΣΑΡΩΣΗ ΑΡΧΕΙΟΥ", START_SCAN: "ΕΝΑΡΞΗ ΣΑΡΩΣΗΣ", CANCEL: "ΑΚΥΡΩΣΗ", AMBULANCE: "ΑΣΘΕΝΟΦΑΡΟ", SYSTEM_ONLINE: "ΣΥΣΤΗΜΑ ΕΝΕΡΓΟ", LOCATING: "ΕΝΤΟΠΙΣΜΟΣ", PHONE: "ΤΗΛΕΦΩΝΟ",
+                    OFFICER_NAME: "ΟΝΟΜΑ ΦΡΟΥΡΟΥ", ENTER_NAME: "ΕΙΣΑΓΩΓΗ ΟΝΟΜΑΤΟΣ", SET_IDENTITY: "ΤΑΥΤΟΠΟΙΗΣΗ",
+                    NIGHT_CLUB: "Νυχτερινό Κέντρο", VILLA_OPS: "Επιχ. Βίλας", FACTORY: "Εργοστάσιο/Χώρος", VIP_PROT: "Προστασία VIP", GEAR_LIST: { "Comms": "Ασύρματος", "Strobe": "Στροβοσκοπικό Φως", "Armor": "Μαλακή Θωράκιση", "IFAK": "Κιτ Πρώτων Βοηθειών", "Keys": "Κλειδιά Περιμέτρου", "Torch": "Φακός Υψηλής Ισχύος", "CCTV": "Οθόνη CCTV", "Vest": "Γιλέκο Υψηλής Ορατότητας", "Helmet": "Κράνος" }, ANALYSIS_PLACEHOLDER: "Χειροκίνητη ανάλυση: Δεν βρέθηκαν συγκεκριμένες λέξεις-κλειδιά. Χρησιμοποιήστε τυπικά πρωτόκολλα απειλών."
                 }
             };
-            const getT = (lang, key) => translations[lang][key] || translations['EN'][key] || key;
-            const fmtDate = (ts) => { if (!ts || !ts.toDate) return "PENDING..."; try { return ts.toDate().toLocaleTimeString(); } catch(e) { return "ERR"; } };
 
-            // --- SHARED COMPONENTS ---
-            const SummaryModal = ({ title, content, loading, onClose }) => (
-                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '20px', paddingTop: '60px', alignItems: 'center' }}>
-                    <div className="card-base" style={{width: '100%', maxWidth: '440px', flex: 1, overflowY: 'auto', border: '1px solid var(--primary-red)', padding:'20px'}}>
-                        <h2 style={{color: 'var(--primary-red)'}}>{loading ? "PROCESSING..." : title}</h2>
-                        {loading ? <div style={{textAlign: 'center', marginTop: '50px', color: 'var(--primary-red)'}}>⟳ ANALYZING DATA...</div> : <div style={{whiteSpace:'pre-wrap'}}>{content}</div>}
-                    </div>
-                    <button className="btn-secondary" style={{maxWidth: '440px'}} onClick={onClose}>CLOSE</button>
-                </div>
-            );
-            
-            const Header = ({ setView, lang, setLang }) => (
+            // --- HEADER ---
+            const Header = ({ setView, view, lang, setLang }) => (
                 <header>
                     <div style={{position: 'absolute', top: '20px', left: '20px', display:'flex', gap:'5px'}}>
                         <button onClick={() => setLang('EN')} style={{background:'none', border:'none', cursor:'pointer', opacity: lang === 'EN' ? 1 : 0.5}}>🇬🇧</button>
                         <button onClick={() => setLang('GR')} style={{background:'none', border:'none', cursor:'pointer', opacity: lang === 'GR' ? 1 : 0.5}}>🇬🇷</button>
                     </div>
                     <h1><span style={{color: 'var(--primary-red)'}}>T-FORCE</span> <span style={{color:'white'}}>{getT(lang, 'CMD_CENTER')}</span></h1>
-                    <button className="sign-out-btn" onClick={() => window.fbFuncs.signOut(window.fbAuth)}>{getT(lang, 'SIGN_OUT')}</button>
+                    <button className="sign-out-btn" onClick={() => setView('settings')}>{getT(lang, 'SETTINGS')}</button>
                 </header>
             );
 
-            const Login = ({ setLang }) => {
-                const [email, setEmail] = useState("");
-                const [pass, setPass] = useState("");
-                const [localLang, setLocalLang] = useState('EN'); 
-
-                const handleLogin = (e) => {
-                    e.preventDefault();
-                    window.fbFuncs.signInWithEmailAndPassword(window.fbAuth, email, pass).catch(err => alert(err.message));
-                };
-
+            // --- IDENTITY SCREEN (REPLACES LOGIN) ---
+            const IdentityScreen = ({ setOfficerName, lang }) => {
+                const [name, setName] = useState("");
                 return (
                     <div className="login-container">
-                        <div className="card-base" style={{margin: '0 auto'}}>
-                            <div style={{position: 'absolute', top: '10px', right: '10px', display:'flex', gap:'5px'}}>
-                                 <button onClick={() => { setLocalLang('EN'); setLang('EN'); }} style={{background:'none', border:'none', cursor:'pointer', opacity: localLang === 'EN' ? 1 : 0.5}}>🇬🇧</button>
-                                 <button onClick={() => { setLocalLang('GR'); setLang('GR'); }} style={{background:'none', border:'none', cursor:'pointer', opacity: localLang === 'GR' ? 1 : 0.5}}>🇬🇷</button>
-                            </div>
-                            <h2 style={{color: 'var(--primary-red)'}}>{getT(localLang, 'LOGIN')}</h2>
-                            <form onSubmit={handleLogin}>
-                                <input className="input-field" type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
-                                <input className="input-field" type="password" placeholder="Password" value={pass} onChange={e=>setPass(e.target.value)} required />
-                                <button type="submit" className="btn-primary">{getT(localLang, 'AUTHENTICATE')}</button>
-                            </form>
+                        <div className="login-box">
+                            <h2 style={{color: 'var(--primary-red)'}}>{getT(lang, 'SET_IDENTITY')}</h2>
+                            <input className="input-field" type="text" placeholder={getT(lang, 'OFFICER_NAME')} value={name} onChange={e=>setName(e.target.value)} />
+                            <button className="btn-primary" onClick={() => { if(name) setOfficerName(name); }}>{getT(lang, 'ENTER')}</button>
                         </div>
                     </div>
                 );
             };
 
-            const Dashboard = ({ setView, user, lang }) => {
+            // --- DASHBOARD ---
+            const Dashboard = ({ setView, officerName, lang }) => {
                 const [broadcasting, setBroadcasting] = useState(false);
-                const toggleBroadcast = () => setBroadcasting(!broadcasting);
-                
+                const watchId = useRef(null);
+
+                const toggleBroadcast = () => {
+                    if (broadcasting) {
+                        navigator.geolocation.clearWatch(watchId.current);
+                        setBroadcasting(false);
+                    } else {
+                        // SILENT FIREBASE WRITE
+                        watchId.current = navigator.geolocation.watchPosition(pos => {
+                            const { doc, setDoc, serverTimestamp } = window.fbFuncs;
+                            // Uses Officer Name as ID for the command center to see
+                            // We use a simple hash or just the name to update the same doc
+                            const docId = officerName.replace(/\s+/g, '_').toLowerCase(); 
+                            setDoc(doc(window.fbDb, 'locations', docId), {
+                                latitude: pos.coords.latitude, longitude: pos.coords.longitude,
+                                username: officerName, timestamp: serverTimestamp(), onDuty: true
+                            }, {merge: true});
+                        });
+                        setBroadcasting(true);
+                    }
+                };
+
                 return (
                     <div style={{padding:'16px'}}>
                         <div className="card-base" style={{borderLeft:'6px solid var(--primary-red)', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
-                            <div><h2 style={{margin:0, fontSize:'24px'}}>{user.email.split('@')[0].toUpperCase()}</h2><small style={{color: broadcasting ? 'var(--success-color)' : 'var(--text-muted)', fontWeight:'bold'}}>{broadcasting ? `● ${getT(lang, 'BROADCASTING')}` : `○ ${getT(lang, 'OFF_DUTY')}`}</small></div>
+                            <div><h2 style={{margin:0, fontSize:'24px'}}>{officerName.toUpperCase()}</h2><small style={{color: broadcasting ? 'var(--success-color)' : 'var(--text-muted)', fontWeight:'bold'}}>{broadcasting ? `● ${getT(lang, 'BROADCASTING')}` : `○ ${getT(lang, 'OFF_DUTY')}`}</small></div>
                             <button onClick={toggleBroadcast} className="btn-secondary" style={{padding:'8px', backgroundColor: broadcasting ? 'var(--success-color)' : 'var(--border-color)', border:'none'}}>{broadcasting ? getT(lang, 'STOP') : getT(lang, 'GO_LIVE')}</button>
                         </div>
                         <div className="dashboard-grid">
@@ -176,60 +177,67 @@
                 );
             };
 
-            // --- FULLY RESTORED MODULES ---
-
-            // INTEL HUB (Restored)
+            // --- MODULES ---
+            const SummaryModal = ({ title, content, loading, onClose }) => (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.95)', zIndex: 2000, display: 'flex', flexDirection: 'column', padding: '20px', paddingTop: '60px', alignItems: 'center' }}>
+                    <div className="card-base" style={{width: '100%', maxWidth: '440px', flex: 1, overflowY: 'auto', border: '1px solid var(--primary-red)', padding:'20px'}}>
+                        <h2 style={{color: 'var(--primary-red)'}}>{loading ? "..." : title}</h2>
+                        {loading ? <div style={{textAlign: 'center', marginTop: '50px', color: 'var(--primary-red)'}}>⟳</div> : <div style={{whiteSpace:'pre-wrap'}}>{content}</div>}
+                    </div>
+                    <button className="btn-secondary" style={{maxWidth: '440px'}} onClick={onClose}>CLOSE</button>
+                </div>
+            );
+            
             const IntelHub = ({ setView, lang }) => { 
                 const [target, setTarget] = useState(""); const [location, setLocation] = useState("Mykonos"); const [summary, setSummary] = useState(null); const [loading, setLoading] = useState(false); const [contacts] = useStickyState({ geminiKey: "" }, 'sentinel_contacts');
                 const performApiCall = async (model, prompt) => { const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${contacts.geminiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }); if (!response.ok) throw new Error(response.statusText); const data = await response.json(); return data.candidates?.[0]?.content?.parts?.[0]?.text || "NO INTEL FOUND."; };
-                const fetchMiniAI = async (loc) => { try { const res = await fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&origin=*&titles=${encodeURIComponent(loc)}`); const data = await res.json(); const pageId = Object.keys(data.query.pages)[0]; return pageId === "-1" ? getT(lang, 'NO_RECORDS') || "No records found." : data.query.pages[pageId].extract.substring(0, 500) + "..."; } catch (e) { return "Database error."; } };
+                const fetchMiniAI = async (loc) => { try { const res = await fetch(`https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&origin=*&titles=${encodeURIComponent(loc)}`); const data = await res.json(); const pageId = Object.keys(data.query.pages)[0]; return pageId === "-1" ? getT(lang, 'NO_RECORDS') : data.query.pages[pageId].extract.substring(0, 500) + "..."; } catch (e) { return "Database error."; } };
                 const executeHybridSearch = async (prompt, title, type, cleanTarget, cleanLoc) => { setLoading(true); let aiText = "", useFallback = false;
                     if (contacts.geminiKey) { try { aiText = await performApiCall("gemini-1.5-flash", prompt + getT(lang, 'AI_SUFFIX')); } catch (e) { try { aiText = await performApiCall("gemini-1.5-pro", prompt + getT(lang, 'AI_SUFFIX')); } catch (e2) { useFallback = true; } } } else { useFallback = true; }
-                    if (useFallback) { const wiki = await fetchMiniAI(cleanLoc); aiText = `⚠️ AI OFFLINE. MANUAL MODE ACTIVE.\n\nDATA (${cleanLoc.toUpperCase()}):\n${wiki}`; }
+                    if (useFallback) { const wiki = await fetchMiniAI(cleanLoc); aiText = `⚠️ MANUAL MODE.\n\nDATA (${cleanLoc.toUpperCase()}):\n${wiki}`; }
                     setSummary({ title: useFallback ? title + " (MANUAL)" : title, content: aiText });
                     setLoading(false);
                 };
                 return (<div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color:'white', borderLeft:'4px solid var(--primary-red)', paddingLeft:'10px'}}>{getT(lang, 'INTEL')} HUB</h2>{summary && <SummaryModal title={summary.title} content={summary.content} loading={loading} onClose={()=>setSummary(null)} /> }<div className="card-base"><label className="input-label">{getT(lang, 'AREA')}</label><input className="input-field" value={location} onChange={e => setLocation(e.target.value)} /><div className="dashboard-grid"><button className="btn-secondary" onClick={() => executeHybridSearch(`Civil Unrest SITREP for "${location}"`, getT(lang, 'SITREP') + `: ${location}`, 'riots', '', location)}>🌍 {getT(lang, 'SITREP')}</button><button className="btn-secondary" onClick={() => executeHybridSearch(`Crime Heatmap for "${location}"`, getT(lang, 'HEATMAP') + `: ${location}`, 'crime', '', location)}>📊 {getT(lang, 'HEATMAP')}</button><div style={{gridColumn: '1 / span 2', marginTop:'10px'}}><label className="input-label">{getT(lang, 'TARGET')}</label><input className="input-field" value={target} onChange={e => setTarget(e.target.value)} placeholder={getT(lang, 'EXAMPLE_HOTEL') || "e.g. Cavo Tagoo"} /><button className="btn-primary" onClick={() => { if(!target) return alert("TARGET REQUIRED"); executeHybridSearch(`Security Audit for "${target}" in "${location}"`, getT(lang, 'TARGET') + `: ${target}`, 'hotel', target, location); }}>🕵️ {getT(lang, 'DEEP_SCAN')}</button></div></div></div></div>); 
             };
 
-            // QR SCANNER (Restored)
-            const QRScanner = ({ setView, lang }) => { 
+            const QRScanner = ({ setView, lang, officerName }) => { 
                 const [scannerActive, setScannerActive] = useState(false); const scannerRef = useRef(null);
                 useEffect(() => {
-                    if(scannerActive) { scannerRef.current = new Html5Qrcode("reader"); scannerRef.current.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decodedText) => { alert(`${getT(lang, 'SCAN_LOGS')} LOGGED: ${decodedText}`); scannerRef.current.stop(); setScannerActive(false); }, (err) => {} ); } else { if(scannerRef.current) { try { scannerRef.current.stop(); } catch(e){} } }
+                    if(scannerActive) { scannerRef.current = new Html5Qrcode("reader"); scannerRef.current.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (decodedText) => { 
+                        alert(`${getT(lang, 'SCAN_LOGS')} LOGGED: ${decodedText}`); 
+                        // FIREBASE WRITE WITHOUT AUTH
+                        const { addDoc, collection, serverTimestamp } = window.fbFuncs;
+                        addDoc(collection(window.fbDb, 'scan_logs'), {
+                            username: officerName,
+                            checkpointData: decodedText,
+                            timestamp: serverTimestamp()
+                        });
+                        scannerRef.current.stop(); setScannerActive(false); 
+                    }, (err) => {} ); } else { if(scannerRef.current) { try { scannerRef.current.stop(); } catch(e){} } }
                     return () => { if(scannerRef.current) { try { scannerRef.current.stop(); } catch(e){} } };
                 }, [scannerActive]);
                 return (<div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color:'white', borderLeft:'4px solid var(--primary-red)', paddingLeft:'10px'}}>📷 {getT(lang, 'SCAN_LOGS')}</h2><div className="card-base">{!scannerActive ? (<button className="btn-primary" onClick={() => setScannerActive(true)}>{getT(lang, 'START_SCAN')}</button>) : (<div><div id="reader" style={{width:'100%', borderRadius:'4px', overflow:'hidden', marginBottom:'10px'}}></div><button className="btn-secondary" onClick={() => setScannerActive(false)}>{getT(lang, 'CANCEL')}</button></div>)}</div></div>); 
             };
             
-            // GEAR CHECKLIST (Restored)
             const GearChecklist = ({ setView, lang }) => { 
                 const [active, setActive] = useState(null); const [checks, setChecks] = useStickyState({}, 'gear'); const toggle = (id) => setChecks(p => ({...p, [id]: !p[id]})); 
                 const lists = { club: {t:getT(lang, 'NIGHT_CLUB'), items:["Comms", "Strobe", "Armor", "IFAK"]}, villa: {t:getT(lang, 'VILLA_OPS'), items:["Keys", "Torch", "CCTV", "IFAK"]}, factory: {t:getT(lang, 'FACTORY'), items:["Vest", "Helmet", "Boots", "Log"]}, vip: {t:getT(lang, 'VIP_PROT'), items:["Go Bag", "Med Profile", "Blanket", "Maps"]} }; 
                 const gearDetails = translations[lang]['GEAR_LIST'] || {};
                 const backButton = <button className="btn-secondary" onClick={()=>active ? setActive(null) : setView('dashboard')}>{getT(lang, 'BACK')}</button>;
-
-                return (<div style={{padding:'16px'}}>{backButton}<h2 style={{color:'white'}}>🎒 {getT(lang, 'GEAR')}</h2>
-                {active ? (
-                    <div style={{padding:'16px'}}><h2 style={{color:'white'}}>{lists[active].t}</h2>{lists[active].items.map((key,i)=><div key={i} onClick={()=>toggle(`${active}-${key}`)} className="card-base" style={{opacity: checks[`${active}-${key}`]?0.4:1, border: checks[`${active}-${key}`]?'1px solid #333':'1px solid var(--primary-red)'}}>{gearDetails[key] || key} {checks[`${active}-${key}`]&&'✓'}</div>)}</div>
-                ) : (
-                    <div>{Object.entries(lists).map(([k,v])=><button key={k} className="btn-secondary" onClick={()=>setActive(k)}>{v.t}</button>)}</div>
-                )}</div>); 
+                return (<div style={{padding:'16px'}}>{backButton}<h2 style={{color:'white'}}>🎒 {getT(lang, 'GEAR')}</h2>{active ? (<div style={{padding:'16px'}}><h2 style={{color:'white'}}>{lists[active].t}</h2>{lists[active].items.map((key,i)=><div key={i} onClick={()=>toggle(`${active}-${key}`)} className="card-base" style={{opacity: checks[`${active}-${key}`]?0.4:1, border: checks[`${active}-${key}`]?'1px solid #333':'1px solid var(--primary-red)'}}>{gearDetails[key] || key} {checks[`${active}-${key}`]&&'✓'}</div>)}</div>) : (<div>{Object.entries(lists).map(([k,v])=><button key={k} className="btn-secondary" onClick={()=>setActive(k)}>{v.t}</button>)}</div>)}</div>); 
             };
 
-            // REPORT GEN (Restored)
             const ReportGen = ({ setView, lang }) => {
                 const [mode, setMode] = useState('manual'); const [data, setData] = useState({ time: "", loc: "", status: "ALL CLEAR", notes: "" }); const [logs, setLogs] = useStickyState([], 'sentinel_shift_logs'); const [report, setReport] = useState(null); const [aiNotes, setAiNotes] = useState(""); const [loading, setLoading] = useState(false); const [contacts] = useStickyState({ geminiKey: "" }, 'sentinel_contacts');
                 const addLog = () => { if (!data.loc && !data.notes) return alert(getT(lang, 'DETAILS') + " REQUIRED"); const now = new Date(); const ts = data.time || fmtDate(now); setLogs(prev => [...prev, { id: Date.now(), time: ts, loc: data.loc.toUpperCase(), status: data.status, notes: data.notes }]); setData({ time: "", loc: "", status: "ALL CLEAR", notes: "" }); };
                 const compile = () => { if (logs.length === 0) return alert("NO LOGS"); let txt = `T-FORCE REPORT - ${getT(lang, 'COMPILE')} (${new Date().toLocaleDateString()})\n\n`; logs.sort((a,b) => a.time.localeCompare(b.time)).forEach(l => { txt += `[${l.time}] ${l.loc}\nSTATUS: ${l.status}\nNOTES: ${l.notes}\n\n`; }); setReport(txt); };
                 const generateAI = async () => { if (!contacts.geminiKey) return alert(getT(lang, 'API_KEY') + " REQUIRED"); setLoading(true); try { const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${contacts.geminiKey}`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ contents: [{ parts: [{ text: getT(lang, 'REPORT_PROMPT').replace('[NOTES]', aiNotes) }] }] }) }); if (!res.ok) throw new Error("API Fail"); const d = await res.json(); setReport(d.candidates?.[0]?.content?.parts?.[0]?.text); } catch (e) { setReport(getT(lang, 'AI_FAILED_MANUAL') || "AI FAILED. USE MANUAL LOG."); } finally { setLoading(false); } };
-                return (<div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color: 'white', borderLeft: '4px solid var(--primary-red)', paddingLeft:'10px'}}>📝 {getT(lang, 'REPORT')}</h2>{report && <SummaryModal title={getT(lang, 'REPORT')} content={report} loading={loading} onClose={() => setReport(null)} />}<div style={{display:'flex', gap:'10px', marginBottom:'10px'}}><button className="btn-secondary" style={{backgroundColor: mode==='manual'?'var(--primary-red)':'var(--card-bg)', fontSize:'14px'}} onClick={()=>setMode('manual')}>{getT(lang, 'MANUAL')}</button><button className="btn-secondary" style={{backgroundColor: mode==='ai'?'var(--primary-red)':'var(--card-bg)', fontSize:'14px'}} onClick={()=>setMode('ai')}>{getT(lang, 'AI_WRITER')}</button></div>{mode === 'ai' ? (<div className="card-base"><textarea className="textarea-field" value={aiNotes} onChange={e => setAiNotes(e.target.value)} placeholder={getT(lang, 'ROUGH_NOTES')} /><button className="btn-primary" onClick={generateAI}>GENERATE (AI)</button></div>) : (<div><div className="card-base"><input className="input-field" value={data.time} onChange={e => setData({...data, time: e.target.value})} placeholder={getT(lang, 'TIME')} /><input className="input-field" value={data.loc} onChange={e => setData({...data, loc: e.target.value})} placeholder={getT(lang, 'LOCATION')} /><button className="btn-primary" style={{marginBottom:0}} onClick={addLog}>+ {getT(lang, 'LOG_ENTRY')}</button></div>{logs.length > 0 && (<button className="btn-secondary" style={{marginTop:'10px'}} onClick={compile}>📄 {getT(lang, 'COMPILE')}</button>)}</div>)}</div>);
+                return (<div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color: 'white', borderLeft: '4px solid var(--primary-red)', paddingLeft:'10px'}}>📝 {getT(lang, 'REPORT')}</h2>{report && <SummaryModal title={getT(lang, 'REPORT')} content={report} loading={loading} onClose={() => setReport(null)} />}<div style={{display:'flex', gap:'10px', marginBottom:'10px'}}><button className="btn-secondary" style={{backgroundColor: mode==='manual'?'var(--primary-red)':'var(--card-bg)', fontSize:'14px'}} onClick={()=>setMode('manual')}>{getT(lang, 'MANUAL')}</button><button className="btn-secondary" style={{backgroundColor: mode==='ai'?'var(--primary-red)':'var(--card-bg)', fontSize:'14px'}} onClick={()=>setMode('ai')}>{getT(lang, 'AI_WRITER')}</button></div>{mode === 'ai' ? (<div className="card-base"><textarea className="textarea-field" value={aiNotes} onChange={e => setAiNotes(e.target.value)} placeholder={getT(lang, 'ROUGH_NOTES')} /><button className="btn-primary" onClick={generateAI}>GENERATE (AI)</button></div>) : (<div><div className="card-base"><input className="input-field" value={data.time} onChange={e => setData({...data, time: e.target.value})} placeholder={getT(lang, 'TIME')} /><input className="input-field" value={data.loc} onChange={e => setData({...data, loc: e.target.value})} placeholder={getT(lang, 'LOCATION')} /><textarea className="textarea-field" value={data.notes} onChange={e => setData({...data, notes: e.target.value})} placeholder={getT(lang, 'DETAILS')} /><button className="btn-primary" style={{marginBottom:0}} onClick={addLog}>+ {getT(lang, 'LOG_ENTRY')}</button></div>{logs.length > 0 && (<button className="btn-secondary" style={{marginTop:'10px'}} onClick={compile}>📄 {getT(lang, 'COMPILE')}</button>)}</div>)}</div>);
             };
             
-            // EVAC / CRISIS / SETTINGS (Restored Logic)
             const EvacMap = ({ setView, lang }) => { 
-                const [coords, setCoords] = useState(null); 
-                useEffect(() => { if ("geolocation" in navigator) navigator.geolocation.getCurrentPosition(p => setCoords({lat: p.coords.latitude.toFixed(5), lng: p.coords.longitude.toFixed(5)})); }, []); 
+                const [coords, setCoords] = useState(null); useEffect(() => { if ("geolocation" in navigator) navigator.geolocation.getCurrentPosition(p => setCoords({lat: p.coords.latitude.toFixed(5), lng: p.coords.longitude.toFixed(5)})); }, []); 
                 const routeTo = (dest) => window.open(`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`, '_blank'); 
                 return (<div style={{ padding: '16px' }}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color:'white', borderLeft:'4px solid var(--primary-red)', paddingLeft:'10px'}}>🧭 {getT(lang, 'EVAC')}</h2><div className="card-base">{getT(lang, 'COORDS')}: {coords ? `${coords.lat}, ${coords.lng}` : getT(lang, 'LOCATING')}</div><button className="btn-primary" onClick={() => routeTo('hospital')}>🏥 {getT(lang, 'MEDICAL')}</button><button className="btn-primary" onClick={() => routeTo('police station')}>👮 {getT(lang, 'POLICE')}</button></div>); 
             };
@@ -239,7 +247,7 @@
                 const p = { medical: {t:getT(lang, 'MEDICAL'), s:["SECURE", "TRIAGE", "EMS"], c:contacts.ambulance}, arrest: {t:getT(lang, 'ARREST'), s:["SILENCE", "LAWYER"], c:contacts.fixer}, attack: {t:getT(lang, 'ATTACK'), s:["COVER", "FIRE", "EVAC"], c:contacts.police} }; 
                 return mode ? <div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setMode(null)}>{getT(lang, 'BACK')}</button><div style={{background:'#3f0000', padding:'15px', marginTop:'15px'}}><h1>{p[mode].t}</h1></div>{p[mode].s.map((s, i)=><div key={i} className="card-base">{i+1}. {s}</div>)}<a href={`tel:${p[mode].c}`} className="btn-primary" style={{background:'var(--success-color)', textDecoration:'none', marginTop:'15px'}}>📞 {getT(lang, 'PHONE')}</a></div> : <div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color:'var(--primary-red)'}}>🚨 {getT(lang, 'CRISIS')}</h2><button className="btn-primary" style={{background:'#7f1d1d'}} onClick={()=>setMode('medical')}>{getT(lang, 'MEDICAL')}</button><button className="btn-secondary" onClick={()=>setMode('attack')}>{getT(lang, 'ATTACK')}</button><button className="btn-primary" style={{background:'#d97706'}} onClick={()=>setMode('arrest')}>{getT(lang, 'ARREST')}</button></div>; 
             };
-            const Settings = ({ close, setView, lang }) => { 
+            const Settings = ({ close, setView, lang, officerName, setOfficerName }) => { 
                 const [contacts, setContacts] = useStickyState({ police: "100", ambulance: "166", embassy: "", geminiKey: "" }, 'sentinel_contacts'); 
                 const [showKey, setShowKey] = useState(false);
                 const handleChg = (key, val) => setContacts(p => ({...p, [key]: val}));
@@ -247,6 +255,9 @@
                 const hasKey = contacts.geminiKey && contacts.geminiKey.length > 5;
 
                 return (<div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h3>⚙️ {getT(lang, 'SETTINGS')}</h3><div className="card-base">
+                    <label className="input-label">{getT(lang, 'OFFICER_NAME')}</label>
+                    <input className="input-field" value={officerName} onChange={e => setOfficerName(e.target.value)} />
+                    
                     <label className="input-label">{getT(lang, 'API_KEY')}</label>
                     {!showKey && hasKey ? (<div style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'10px', background:'#000', border:'1px solid var(--success-color)', borderRadius:'2px', marginBottom:'12px'}}><span style={{color:'var(--success-color)', fontWeight:'bold'}}>● {getT(lang, 'SYSTEM_ONLINE')}</span><button style={{background:'none', border:'none', color:'#666', fontSize:'10px', textDecoration:'underline'}} onClick={() => setShowKey(true)}>CHANGE</button></div>) : (
                         <div style={{marginBottom:'12px'}}><input className="input-field" type="password" value={contacts.geminiKey} onChange={e => handleChg('geminiKey', e.target.value)} placeholder="ENTER API KEY" /></div>
@@ -261,60 +272,46 @@
                 const [result, setResult] = useState(null);
                 const [loading, setLoading] = useState(false);
                 const [contacts] = useStickyState({ geminiKey: "" }, 'sentinel_contacts');
-
-                const analyze = async () => { /* ... (Analysis Logic) */ 
-                    setLoading(true);
-                    setTimeout(() => { setLoading(false); setResult(getT(lang, 'ANALYSIS_PLACEHOLDER') || "Manual analysis placeholder result."); }, 1000);
-                };
+                const analyze = async () => { setLoading(true); setTimeout(() => { setLoading(false); setResult(getT(lang, 'ANALYSIS_PLACEHOLDER')); }, 1000); };
                 return (<div style={{padding:'16px'}}><button className="btn-secondary" onClick={()=>setView('dashboard')}>{getT(lang, 'BACK')}</button><h2 style={{color:'white', borderLeft:'4px solid var(--primary-red)', paddingLeft:'10px'}}>⚔️ {getT(lang, 'RED_TEAM')}</h2>
                     {result && <SummaryModal title={getT(lang, 'ANALYZE')} content={result} loading={loading} onClose={()=>setResult(null)} />}
-                    <div className="card-base"><label className="input-label">{getT(lang, 'SCENARIO')}</label>
-                        <textarea className="textarea-field" value={scenario} onChange={e => setScenario(e.target.value)} placeholder={getT(lang, 'SCENARIO')} />
-                        <button className="btn-primary" onClick={analyze}>{getT(lang, 'ANALYZE')}</button>
-                    </div>
-                </div>);
+                    <div className="card-base"><label className="input-label">{getT(lang, 'SCENARIO')}</label><textarea className="textarea-field" value={scenario} onChange={e => setScenario(e.target.value)} placeholder={getT(lang, 'SCENARIO')} /><button className="btn-primary" onClick={analyze}>{getT(lang, 'ANALYZE')}</button></div></div>);
             };
 
-
-            // --- MAIN APP COMPONENT ---
+            // --- ROOT COMPONENT ---
             function SentinelApp() {
-                const [user, setUser] = useState(null);
                 const [fbReady, setFbReady] = useState(false);
                 const [view, setView] = useState('dashboard');
                 const [lang, setLang] = useStickyState('EN', 'sentinel_lang');
+                const [officerName, setOfficerName] = useStickyState('', 'sentinel_officer');
 
                 useEffect(() => {
                     const init = () => {
-                        if(window.fbFuncs && window.fbAuth) {
-                            window.fbFuncs.onAuthStateChanged(window.fbAuth, (u) => { 
-                                setUser(u); 
-                                setFbReady(true); 
-                            });
-                        }
+                        window.fbFuncs.signInAnonymously(window.fbAuth).then(() => setFbReady(true));
                     };
-                    
                     if(window.fbAuth) init();
                     window.addEventListener('firebase-ready', init);
+                    return () => window.removeEventListener('firebase-ready', init);
                 }, []);
 
-                if(!fbReady) return <div style={{color:'var(--primary-red)', display:'flex', justifyContent:'center', alignItems:'center', height:'100vh', fontSize:'24px', letterSpacing:'2px'}}>INITIALIZING SYSTEM...</div>;
+                if(!fbReady) return <div style={{color:'var(--primary-red)', display:'flex', justifyContent:'center', alignItems:'center', height:'100vh', fontSize:'24px', letterSpacing:'2px'}}>INITIALIZING...</div>;
                 
-                if (!user) return <Login setLang={setLang} />;
+                if (!officerName) return <IdentityScreen setOfficerName={setOfficerName} lang={lang} />;
 
                 return (
                     <div className="app-container">
-                        <Header setView={setView} lang={lang} setLang={setLang} />
+                        <Header setView={setView} view={view} lang={lang} setLang={setLang} />
 
                         <main>
-                            {view === 'dashboard' && <Dashboard setView={setView} user={user} lang={lang} />}
+                            {view === 'dashboard' && <Dashboard setView={setView} officerName={officerName} lang={lang} />}
                             {view === 'intel' && <IntelHub setView={setView} lang={lang} />}
-                            {view === 'scanner' && <QRScanner setView={setView} lang={lang} />}
+                            {view === 'scanner' && <QRScanner setView={setView} lang={lang} officerName={officerName} />}
                             {view === 'gear' && <GearChecklist setView={setView} lang={lang} />}
                             {view === 'report' && <ReportGen setView={setView} lang={lang} />}
                             {view === 'redteam' && <RedTeam setView={setView} lang={lang} />}
                             {view === 'evac' && <EvacMap setView={setView} lang={lang} />}
                             {view === 'crisis' && <CrisisMode setView={setView} lang={lang} />}
-                            {view === 'settings' && <Settings setView={setView} lang={lang} close={() => setView('dashboard')} />}
+                            {view === 'settings' && <Settings setView={setView} lang={lang} close={() => setView('dashboard')} officerName={officerName} setOfficerName={setOfficerName} />}
                         </main>
 
                         <div className="nav">
@@ -328,10 +325,10 @@
                 );
             }
 
-            // CRITICAL: Use LEGACY RENDER METHOD
             ReactDOM.render(<SentinelApp />, document.getElementById('root'));
         })();
     </script>
 </body>
 </html>
+
 
